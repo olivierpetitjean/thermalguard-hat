@@ -1,0 +1,9 @@
+paho-mqtt>=1.6.1
+pigpio>=1.78
+RPi.GPIO>=0.7.1
+adafruit-circuitpython-sht31d>=2.3.19
+adafruit-circuitpython-mcp3xxx>=1.4.14
+Adafruit-SSD1306>=1.6.2
+Pillow>=9.0.0
+w1thermsensor>=2.0.0
+netifaces>=0.11.0

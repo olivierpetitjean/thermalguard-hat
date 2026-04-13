@@ -1,0 +1,24 @@
+<article class="dashboard-card">
+  <div class="dashboard-card__content dashboard-card__content--full">
+    <div class="dashboard-card__title-row">
+      <h2>Diagnostics</h2>
+    </div>
+
+    <div class="dashboard-card__metric-block">
+      <span class="dashboard-card__metric-label">API</span>
+      <span class="dashboard-card__metric-break">{{ apiBaseUrl }}</span>
+    </div>
+
+    <div class="dashboard-card__metric-block">
+      <span class="dashboard-card__metric-label">MQTT</span>
+      <span class="dashboard-card__metric-break">{{ mqttUrl }}</span>
+    </div>
+
+    <div class="dashboard-card__metric-block">
+      <span class="dashboard-card__metric-label">Account</span>
+      <span class="dashboard-card__metric-break" *ngIf="hasAccount === true">Backend account present.</span>
+      <span class="dashboard-card__metric-break" *ngIf="hasAccount === false">No backend account detected.</span>
+      <span class="dashboard-card__metric-break" *ngIf="hasAccount === null">Verification in progress...</span>
+    </div>
+  </div>
+</article>

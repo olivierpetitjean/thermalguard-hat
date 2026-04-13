@@ -1,0 +1,92 @@
+{
+  "ConnectionStrings": {
+    "WebApiDatabase": "Data Source=/opt/thermalguard-hat/api/db/LocalDatabase.db"
+  },
+  "AllowedOrigins": "http://raspberrypi.local",
+  "RetentionDays": 30,
+  "Auth": {
+    "JwtSecret": "change-me-in-production-at-least-32-chars!!",
+    "TokenExpiryHours": 12
+  },
+  "Kiosk": {
+    "BypassIPs": []
+  },
+  "KioskSetup": {
+    "Enabled": false,
+    "User": "",
+    "Inline": false,
+    "HideCursor": true,
+    "DesktopAutologin": true,
+    "DisableScreenBlanking": true,
+    "Autostart": true
+  },
+  "BrokerHostSettings": {
+    "Host": "127.0.0.1",
+    "Port": 1883,
+    "WsPort": 1884,
+    "User": "",
+    "Password": "",
+    "UseTls": false
+  },
+  "ClientSettings": {
+    "Id": "thermalguard-hat-api"
+  },
+  "Display": {
+    "DashboardTitle": "Dashboard",
+    "Sensor1Name": "Rack",
+    "Sensor2Name": "Ambient",
+    "Fan1Name": "Intake Fan",
+    "Fan2Name": "Exhaust Fan",
+    "Locale": "en-US",
+    "TemperatureUnit": "C",
+    "DisableFanAnimations": false,
+    "AirflowUnit": "m3h",
+    "Fan1MaxAirflow": 95.0,
+    "Fan2MaxAirflow": 95.0
+  },
+  "Python": {
+    "Debug": "INFO",
+    "SaveDelaySecond": 15,
+    "ScreenStandByDelay": 30,
+    "FanFrequency": 25000,
+    "FanPWMResolution": 1000,
+    "GpioChip": 0,
+    "FanPwmChipPath": "",
+    "Fan1PwmChannel": 0,
+    "Fan2PwmChannel": 1,
+    "FanTempoSeconds": 30,
+    "Fan1Pin": 12,
+    "Fan2Pin": 13,
+    "SysBuzzer": 22,
+    "SystemFan": 23,
+    "Fan1Sensor": 25,
+    "Fan2Sensor": 24,
+    "FanTachGlitchFilterUs": 50,
+    "Button1Pin": 17,
+    "Button2Pin": 0,
+    "RedLed": 6,
+    "GreenLed": 5,
+    "OutputEnabled": 4,
+    "DbName": "temperatures",
+    "Sensor1Uid": "xxxxxxxxxxxx",
+    "Sensor2Uid": "xxxxxxxxxxxx",
+    "SysFanThreshold": 38
+  },
+  "Mosquitto": {
+    "Local": {
+      "Authentication": {
+        "Enabled": false,
+        "Username": "",
+        "Password": ""
+      }
+    },
+    "Bridge": {
+      "Enabled": false,
+      "Host": "",
+      "Port": 1883,
+      "UseTls": false,
+      "Username": "",
+      "Password": ""
+    }
+  }
+}

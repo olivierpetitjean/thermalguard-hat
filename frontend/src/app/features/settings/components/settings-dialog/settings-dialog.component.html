@@ -1,0 +1,111 @@
+<div class="settings-dialog">
+  <header class="settings-dialog__header">
+    <div>
+      <p class="settings-dialog__eyebrow">Control Editor</p>
+      <h2 mat-dialog-title>Settings</h2>
+    </div>
+    <button type="button" mat-icon-button mat-dialog-close aria-label="Close settings">
+      <mat-icon fontIcon="close"></mat-icon>
+    </button>
+  </header>
+
+  <mat-dialog-content class="settings-dialog__content">
+    <div class="settings-dialog__toolbar">
+      <div class="settings-dialog__intro">
+        <h3>Temperature rules</h3>
+        <p>Define how your fans react to the sensor temperatures. The same visual editor works for both control strategies.</p>
+      </div>
+
+      <mat-button-toggle-group
+        class="settings-dialog__mode-toggle"
+        [value]="linkedMode ? 'linked' : 'independent'"
+        (valueChange)="onModeChanged($event)">
+        <mat-button-toggle value="linked">Linked fans</mat-button-toggle>
+        <mat-button-toggle value="independent">Independent</mat-button-toggle>
+      </mat-button-toggle-group>
+    </div>
+
+    <div class="settings-dialog__mode-help">
+      <mat-icon [fontIcon]="linkedMode ? 'hub' : 'tune'"></mat-icon>
+      <p *ngIf="linkedMode">
+        Each rule uses one shared threshold. When either sensor reaches this value, both fans are applied together.
+      </p>
+      <p *ngIf="!linkedMode">
+        Each rule keeps separate thresholds for the two sensors while still letting you define both fan outputs in the same card.
+      </p>
+    </div>
+
+    <div class="settings-dialog__loading" *ngIf="loading">
+      <div class="settings-dialog__loading-card">Loading temperature rules…</div>
+    </div>
+
+    <div class="settings-dialog__rules" *ngIf="!loading">
+      <article class="settings-dialog__rule-card" *ngFor="let rule of rules; let index = index; trackBy: trackRule">
+        <div class="settings-dialog__rule-header">
+          <div>
+            <p class="settings-dialog__rule-index">Rule {{ index + 1 }}</p>
+            <h4>{{ linkedMode ? 'Shared threshold' : 'Independent thresholds' }}</h4>
+          </div>
+          <button type="button" mat-icon-button aria-label="Delete rule" (click)="removeRule(index)">
+            <mat-icon fontIcon="delete"></mat-icon>
+          </button>
+        </div>
+
+        <div class="settings-dialog__rule-grid" *ngIf="linkedMode; else independentRule">
+          <mat-form-field appearance="outline">
+            <mat-label>Trigger temperature (°{{ display.temperatureUnit }})</mat-label>
+            <input matInput type="number" min="0" [max]="temperatureInputMax" step="0.1" [(ngModel)]="rule.threshold" />
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>{{ display.fan1Name }}</mat-label>
+            <input matInput type="number" min="0" max="100" step="1" [(ngModel)]="rule.value1" />
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>{{ display.fan2Name }}</mat-label>
+            <input matInput type="number" min="0" max="100" step="1" [(ngModel)]="rule.value2" />
+          </mat-form-field>
+        </div>
+
+        <ng-template #independentRule>
+          <div class="settings-dialog__rule-grid settings-dialog__rule-grid--independent">
+            <mat-form-field appearance="outline">
+              <mat-label>{{ display.sensor1Name }} threshold (°{{ display.temperatureUnit }})</mat-label>
+              <input matInput type="number" min="0" [max]="temperatureInputMax" step="0.1" [(ngModel)]="rule.minTemp1" />
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>{{ display.sensor2Name }} threshold (°{{ display.temperatureUnit }})</mat-label>
+              <input matInput type="number" min="0" [max]="temperatureInputMax" step="0.1" [(ngModel)]="rule.minTemp2" />
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>{{ display.fan1Name }}</mat-label>
+              <input matInput type="number" min="0" max="100" step="1" [(ngModel)]="rule.value1" />
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>{{ display.fan2Name }}</mat-label>
+              <input matInput type="number" min="0" max="100" step="1" [(ngModel)]="rule.value2" />
+            </mat-form-field>
+          </div>
+        </ng-template>
+      </article>
+    </div>
+
+    <div class="settings-dialog__feedback" *ngIf="saveError || saveSuccess">
+      <p class="settings-dialog__feedback-item settings-dialog__feedback-item--error" *ngIf="saveError">{{ saveError }}</p>
+      <p class="settings-dialog__feedback-item settings-dialog__feedback-item--success" *ngIf="saveSuccess">{{ saveSuccess }}</p>
+    </div>
+  </mat-dialog-content>
+
+  <mat-dialog-actions align="end" class="settings-dialog__actions">
+    <button type="button" mat-stroked-button (click)="addRule()">Add rule</button>
+    <button type="button" mat-stroked-button (click)="reset()">Reset</button>
+    <button type="button" mat-raised-button color="primary" [disabled]="loading || saving" (click)="save()">
+      {{ saving ? 'Saving…' : 'Save' }}
+    </button>
+    <button type="button" mat-stroked-button mat-dialog-close>Close</button>
+  </mat-dialog-actions>
+</div>

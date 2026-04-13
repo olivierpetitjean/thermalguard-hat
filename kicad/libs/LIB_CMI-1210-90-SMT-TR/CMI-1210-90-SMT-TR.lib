@@ -1,0 +1,24 @@
+EESchema-LIBRARY Version 2.3
+#encoding utf-8
+#SamacSys ECAD Model CMI-1210-90-SMT-TR
+#/13841037/1006536/2.49/2/4/Loudspeaker or Buzzer
+DEF CMI-1210-90-SMT-TR LS 0 30 Y Y 1 F N
+F0 "LS" 450 0 50 H V L CNN
+F1 "CMI-1210-90-SMT-TR" 450 -100 50 H V L CNN
+F2 "CMI121090SMTTR" 450 -200 50 H I L CNN
+F3 "https://www.mouser.de/datasheet/2/670/cmi_1210_90_smt_tr-1776767.pdf" 450 -300 50 H I L CNN
+F4 "Piezo Buzzers & Audio Indicators buzzer, 12.8 mm x 12.8 mm x 10 mm deep, M, 5 V, 90 dB, Surface Mount, Audio Indicator" 450 -400 50 H I L CNN "Description"
+F5 "10.3" 450 -500 50 H I L CNN "Height"
+F6 "490-CMI-1210-90SMTTR" 450 -600 50 H I L CNN "Mouser Part Number"
+F7 "https://www.mouser.co.uk/ProductDetail/CUI-Devices/CMI-1210-90-SMT-TR?qs=P1JMDcb91o7BNpha6IpZxw%3D%3D" 450 -700 50 H I L CNN "Mouser Price/Stock"
+F8 "CUI Devices" 450 -800 50 H I L CNN "Manufacturer_Name"
+F9 "CMI-1210-90-SMT-TR" 450 -900 50 H I L CNN "Manufacturer_Part_Number"
+DRAW
+X + 1 0 0 200 R 50 50 0 0 P
+X - 2 0 -100 200 R 50 50 0 0 P
+P 6 0 1 6 200 50 280 50 380 150 380 -250 280 -150 200 -150 N
+P 2 0 1 6 200 50 200 -150 N
+ENDDRAW
+ENDDEF
+#
+#End Library

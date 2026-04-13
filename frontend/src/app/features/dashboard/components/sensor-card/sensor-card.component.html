@@ -1,0 +1,29 @@
+<article class="dashboard-card">
+  <span class="status-pill" [class.status-pill--success]="temperature > 0" [class.status-pill--error]="temperature <= 0">
+    {{ temperature > 0 ? 'Online' : 'Offline' }}
+  </span>
+
+  <div class="dashboard-card__icon dashboard-card__icon--temperature">
+    <img [src]="iconPath" [alt]="title" />
+  </div>
+
+  <div class="dashboard-card__content">
+    <div class="dashboard-card__title-row">
+      <h2>{{ title }}</h2>
+    </div>
+
+    <div class="dashboard-card__metric-row">
+      <span class="dashboard-card__metric-label">Temperature</span>
+      <span class="dashboard-card__metric-value">{{ formattedTemperature }} &deg;{{ temperatureUnit }}</span>
+    </div>
+
+    <div class="dashboard-card__metric-row">
+      <span class="dashboard-card__metric-label">Fan power</span>
+      <span class="dashboard-card__metric-value">{{ power }}%</span>
+    </div>
+
+    <div class="dashboard-progress">
+      <div class="dashboard-progress__fill" [style.width.%]="power"></div>
+    </div>
+  </div>
+</article>

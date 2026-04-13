@@ -1,0 +1,9 @@
+EESchema-DOCLIB  Version 2.0
+#
+$CMP PCL1C681MCL1GS
+D Aluminum Organic Polymer Capacitors 680UF     16V ESR=14
+K
+F https://www.nichicon.co.jp/english/products/pdfs/201810_PCL_e.pdf
+$ENDCMP
+#
+#End Doc Library

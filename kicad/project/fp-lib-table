@@ -1,0 +1,4 @@
+(fp_lib_table
+  (lib (name "Perso")(type "KiCad")(uri "${KIPRJMOD}/../libs/Perso.pretty")(options "")(descr "Custom footprints for ThermalGuard HAT uHat PCB"))
+  (lib (name "RPi_Hat")(type "KiCad")(uri "${KIPRJMOD}/../libs/Perso.pretty")(options "")(descr "Raspberry Pi HAT mounting holes"))
+)

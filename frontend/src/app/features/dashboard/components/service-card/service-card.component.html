@@ -1,0 +1,144 @@
+<article class="dashboard-card dashboard-card--wide service-card">
+  <div class="temp">
+    <img class="card-icon" [src]="iconPath" alt="Service" />
+  </div>
+
+  <div class="service-card__body flex-row nogap flex-wrap">
+    <div class="service-card__summary">
+      <h3 class="mt0 mb5">Overview</h3>
+      <span class="light">Since</span>&nbsp;<span>{{ serviceTime }}</span><br />
+      <div class="vmiddle" *ngIf="boostEnabled">
+        <span class="label boost inline-left vmiddle">Boost</span>&nbsp;
+        <span class="vmiddle">{{ boostRemainText }}</span>
+      </div>
+    </div>
+
+    <div class="service-card__status-block">
+      <div class="toggle-wrapper">
+        <span class="service-card__status-label">Status</span>
+        <span
+          class="status-badge service-card__status-value"
+          [class.status-badge--success]="serviceStatusText === 'Running'"
+          [class.status-badge--alert]="serviceStatusText === 'Stopped'">
+          {{ serviceStatusText || 'Unknown' }}
+        </span>
+        <span class="service-card__status-label">Auto</span>
+        <mat-slide-toggle
+          class="fixed-toggle service-card__toggle-value"
+          [labelPosition]="'after'"
+          [checked]="isAuto"
+          [disabled]="autoWaiting"
+          (change)="autoChanged.emit($event.checked)">
+        </mat-slide-toggle>
+      </div>
+    </div>
+
+    <div class="service-card__actions-column">
+      <button
+        mat-icon-button
+        class="top-right-menu"
+        [disabled]="serviceCommandWait"
+        [matMenuTriggerFor]="serviceMenu"
+        aria-label="Service actions">
+        <mat-icon>more_vert</mat-icon>
+      </button>
+
+      <mat-menu #serviceMenu="matMenu">
+        <button mat-menu-item [disabled]="serviceCommandWait" (click)="runAction('restart')">
+          <mat-icon>play_circle_filled</mat-icon>
+          <span>Restart service</span>
+        </button>
+        <button mat-menu-item [disabled]="serviceCommandWait || serviceStatusText === 'Running'" (click)="runAction('start')">
+          <mat-icon>play_circle_outline</mat-icon>
+          <span>Start service</span>
+        </button>
+        <button mat-menu-item [disabled]="serviceCommandWait || serviceStatusText === 'Stopped'" (click)="runAction('stop')">
+          <mat-icon>stop</mat-icon>
+          <span>Stop service</span>
+        </button>
+        <mat-divider></mat-divider>
+        <button mat-menu-item (click)="systemInfo.emit()">
+          <mat-icon>monitoring</mat-icon>
+          <span>System info</span>
+        </button>
+      </mat-menu>
+
+      <div class="boost-content">
+      <button
+        mat-raised-button
+        color="primary"
+        *ngIf="boostEnabled"
+        [disabled]="serviceCommandWait || boostCancelPending"
+        (click)="cancelBoost.emit()">
+        <mat-icon class="fs20">stop</mat-icon>
+        Stop boost
+      </button>
+
+      <ng-container *ngIf="!boostEnabled">
+        <button
+          mat-raised-button
+          color="primary"
+          class="button-left boost-main"
+          [disabled]="serviceCommandWait || boostPending"
+          (click)="runBoost()">
+          <mat-icon class="fs20">offline_bolt</mat-icon>
+          Boost
+        </button>
+        <button
+          mat-raised-button
+          color="primary"
+          class="button-right boost-caret"
+          [disabled]="serviceCommandWait || boostPending"
+          [matMenuTriggerFor]="boostMenu"
+          aria-label="Boost presets">
+          <mat-icon>arrow_drop_down</mat-icon>
+        </button>
+
+        <mat-menu #boostMenu="matMenu">
+          <button mat-menu-item class="boost-menu-button" [disabled]="serviceCommandWait || boostPending" (click)="selectBoostPreset(60)">
+            <span>1 minute</span>
+            <mat-icon *ngIf="lastBoostValue === 60" class="check-menu">check_circle</mat-icon>
+          </button>
+          <button mat-menu-item class="boost-menu-button" [disabled]="serviceCommandWait || boostPending" (click)="selectBoostPreset(300)">
+            <span>5 minutes</span>
+            <mat-icon *ngIf="lastBoostValue === 300" class="check-menu">check_circle</mat-icon>
+          </button>
+          <button mat-menu-item class="boost-menu-button" [disabled]="serviceCommandWait || boostPending" (click)="selectBoostPreset(600)">
+            <span>10 minutes</span>
+            <mat-icon *ngIf="lastBoostValue === 600" class="check-menu">check_circle</mat-icon>
+          </button>
+          <button mat-menu-item class="boost-menu-button" [disabled]="serviceCommandWait || boostPending" (click)="selectBoostPreset(900)">
+            <span>15 minutes</span>
+            <mat-icon *ngIf="lastBoostValue === 900" class="check-menu">check_circle</mat-icon>
+          </button>
+          <button mat-menu-item class="boost-menu-button" [disabled]="serviceCommandWait || boostPending" (click)="selectBoostPreset(1800)">
+            <span>30 minutes</span>
+            <mat-icon *ngIf="lastBoostValue === 1800" class="check-menu">check_circle</mat-icon>
+          </button>
+        </mat-menu>
+      </ng-container>
+      </div>
+    </div>
+
+    <div class="flex-break pt10" [hidden]="isAuto">
+      <div class="service-card__manual-separator"></div>
+      <div class="service-card__sliders">
+        <div class="service-card__slider-column">
+          <span class="mr5 light vbottom">{{ fan1Name }} speed</span>
+          <span class="service-card__slider-value">{{ draftFan1Power }}%</span>
+          <mat-slider min="0" max="100" step="1" discrete>
+            <input matSliderThumb [value]="draftFan1Power" (input)="onFan1Input($event)" (change)="commitFan1($event)" />
+          </mat-slider>
+        </div>
+
+        <div class="service-card__slider-column">
+          <span class="mr5 light vbottom">{{ fan2Name }} speed</span>
+          <span class="service-card__slider-value">{{ draftFan2Power }}%</span>
+          <mat-slider min="0" max="100" step="1" discrete>
+            <input matSliderThumb [value]="draftFan2Power" (input)="onFan2Input($event)" (change)="commitFan2($event)" />
+          </mat-slider>
+        </div>
+      </div>
+    </div>
+  </div>
+</article>

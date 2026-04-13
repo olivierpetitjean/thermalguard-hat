@@ -1,0 +1,150 @@
+:host {
+  display: block;
+  width: 100%;
+}
+
+.system-info-dialog {
+  width: 100%;
+  max-width: 100%;
+  color: var(--text-primary);
+  overflow-x: hidden;
+}
+
+::ng-deep .system-info-dialog .mat-mdc-dialog-title {
+  color: var(--text-strong) !important;
+}
+
+.system-info-dialog__content {
+  position: relative;
+}
+
+.system-info-dialog__toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 18px;
+}
+
+.system-info-dialog__range-button--active {
+  border-color: var(--theme-primary) !important;
+  color: var(--text-strong) !important;
+  background: color-mix(in srgb, var(--theme-primary) 14%, transparent);
+}
+
+.system-info-dialog__loading {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px 0;
+  background: color-mix(in srgb, var(--card-bg) 78%, transparent);
+  backdrop-filter: blur(1px);
+}
+
+.system-info-dialog__loading-card {
+  color: var(--text-muted);
+  background: var(--card-bg-strong);
+  border: 1px solid var(--card-border-strong);
+  border-radius: 999px;
+  padding: 10px 16px;
+  box-shadow: var(--shadow-card);
+}
+
+.system-info-dialog__graphs {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 18px;
+  overflow-x: hidden;
+  min-height: 620px;
+}
+
+.system-info-dialog__chart-card {
+  background: var(--card-bg-strong);
+  border: 1px solid var(--card-border-strong);
+  border-radius: 4px;
+  padding: 16px;
+  overflow: hidden;
+}
+
+.system-info-dialog__graphs--loading {
+  pointer-events: none;
+}
+
+.system-info-dialog__chart-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 10px;
+}
+
+.system-info-dialog__chart-header h3 {
+  margin: 0;
+  color: var(--text-soft);
+  font-size: 1.05rem;
+  font-weight: 600;
+}
+
+.system-info-dialog__chart-header span {
+  color: var(--text-label);
+  font-size: 0.84rem;
+}
+
+::ng-deep .system-info-dialog .mat-mdc-dialog-surface {
+  background: var(--card-bg);
+  color: var(--text-primary);
+  overflow: hidden;
+}
+
+::ng-deep .system-info-dialog .mat-mdc-dialog-content {
+  max-height: calc(90vh - 120px);
+  overflow-x: hidden;
+}
+
+::ng-deep .system-info-dialog .mat-mdc-button:not(:disabled) {
+  color: var(--text-primary);
+}
+
+::ng-deep .system-info-dialog .mat-mdc-outlined-button {
+  border-color: var(--card-border-strong) !important;
+  color: var(--text-soft) !important;
+  background: var(--card-bg-strong);
+}
+
+::ng-deep .system-info-dialog .mat-mdc-outlined-button .mdc-button__label,
+::ng-deep .system-info-dialog .mat-mdc-button .mdc-button__label {
+  color: inherit !important;
+}
+
+::ng-deep .system-info-dialog .ngx-charts text {
+  fill: var(--text-soft) !important;
+}
+
+::ng-deep .system-info-dialog .ngx-charts .legend-label-text,
+::ng-deep .system-info-dialog .ngx-charts .axis-label,
+::ng-deep .system-info-dialog .ngx-charts .tick text {
+  fill: var(--text-muted) !important;
+}
+
+::ng-deep .system-info-dialog .ngx-charts .gridline-path {
+  stroke: var(--gridline) !important;
+}
+
+@media screen and (max-width: 767px) {
+  .system-info-dialog__graphs {
+    min-height: calc(100vh - 180px);
+  }
+
+  .system-info-dialog__toolbar {
+    gap: 8px;
+  }
+
+  .system-info-dialog__chart-card {
+    padding: 12px;
+  }
+
+  .system-info-dialog__chart-header {
+    margin-bottom: 8px;
+  }
+}

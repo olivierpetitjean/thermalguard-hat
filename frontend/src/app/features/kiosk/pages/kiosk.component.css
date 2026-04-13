@@ -1,0 +1,150 @@
+:host {
+  display: block;
+}
+
+.kiosk-viewport {
+  width: 100%;
+  min-height: 100vh;
+}
+
+.kiosk-shell {
+  max-width: 1320px;
+  margin: 0 auto;
+  min-height: 100vh;
+  padding: 28px 24px 36px;
+}
+
+.kiosk-header {
+  display: block;
+  margin-bottom: 20px;
+}
+
+.kiosk-header h1 {
+  line-height: inherit;
+}
+
+.kiosk-layout {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.kiosk-layout--inline {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(200px, 1fr);
+  align-items: stretch;
+  gap: 12px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding-bottom: 8px;
+  scrollbar-width: thin;
+}
+
+.kiosk-layout--inline .kiosk-row {
+  display: contents;
+}
+
+.kiosk-layout--inline .kiosk-cell {
+  min-width: 0;
+}
+
+.kiosk-shell--inline {
+  max-width: none;
+  padding-bottom: 24px;
+}
+
+.kiosk-shell--inline .kiosk-header {
+  margin-bottom: 14px;
+}
+
+.kiosk-shell--inline .kiosk-layout {
+  min-width: min-content;
+}
+
+.kiosk-row {
+  display: flex;
+  gap: 18px;
+}
+
+.kiosk-row--full {
+  display: block;
+}
+
+.kiosk-cell {
+  flex: 1 1 320px;
+  min-width: 0;
+}
+
+.kiosk-viewport--rotate-90,
+.kiosk-viewport--rotate-180,
+.kiosk-viewport--rotate-270 {
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+  background: var(--bg-page);
+}
+
+.kiosk-viewport--rotate-90 .kiosk-shell,
+.kiosk-viewport--rotate-270 .kiosk-shell {
+  position: absolute;
+  max-width: none;
+  width: 100vh;
+  min-height: 100vw;
+  margin: 0;
+}
+
+.kiosk-viewport--rotate-90 .kiosk-shell {
+  top: 0;
+  left: 100vw;
+  transform-origin: top left;
+  transform: rotate(90deg);
+}
+
+.kiosk-viewport--rotate-180 .kiosk-shell {
+  position: absolute;
+  top: 100vh;
+  left: 100vw;
+  width: 100vw;
+  min-height: 100vh;
+  max-width: none;
+  margin: 0;
+  transform-origin: top left;
+  transform: rotate(180deg);
+}
+
+.kiosk-viewport--rotate-270 .kiosk-shell {
+  top: 100vh;
+  left: 0;
+  transform-origin: top left;
+  transform: rotate(270deg);
+}
+
+.kiosk-shell--inline :is(.dashboard-card, .service-card) {
+  min-height: 104px;
+}
+
+@media screen and (max-width: 900px) {
+  .kiosk-shell {
+    padding: 18px 14px 22px;
+  }
+
+  .kiosk-row {
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .kiosk-layout--inline {
+    grid-auto-columns: minmax(180px, 82vw);
+    gap: 10px;
+  }
+
+  .kiosk-layout--inline .kiosk-row {
+    display: contents;
+  }
+
+  .kiosk-layout--inline .kiosk-cell,
+  .kiosk-layout--inline .kiosk-row--full {
+    min-width: 0;
+  }
+}

@@ -1,0 +1,22 @@
+<section class="auth-shell">
+  <div class="auth-card">
+    <h1>ThermalGuard HAT</h1>
+    <p class="auth-subtitle">Sign in</p>
+
+    <label>
+      <span>Username</span>
+      <input [(ngModel)]="username" autocomplete="username" (keyup.enter)="submit()" />
+    </label>
+
+    <label>
+      <span>Password</span>
+      <input [(ngModel)]="password" type="password" autocomplete="current-password" (keyup.enter)="submit()" />
+    </label>
+
+    <p class="auth-error" *ngIf="error">{{ error }}</p>
+
+    <button type="button" (click)="submit()" [disabled]="loading">
+      {{ loading ? 'Signing in...' : 'Sign in' }}
+    </button>
+  </div>
+</section>

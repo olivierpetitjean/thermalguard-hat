@@ -1,0 +1,30 @@
+<article class="dashboard-card dashboard-card--wide service-card">
+  <div class="temp">
+    <img class="card-icon" [src]="iconPath" alt="Service" />
+  </div>
+
+  <div class="service-card__body flex-row nogap flex-wrap">
+    <div class="service-card__summary">
+      <h3 class="mt0 mb5">Overview</h3>
+      <span class="light">Since</span>&nbsp;<span>{{ serviceTime || '—' }}</span><br />
+      <div class="vmiddle" *ngIf="boostEnabled">
+        <span class="label boost inline-left vmiddle">Boost</span>&nbsp;
+        <span class="vmiddle">{{ boostRemainText }}</span>
+      </div>
+    </div>
+
+    <div class="service-card__status-block">
+      <div class="toggle-wrapper">
+        <span class="service-card__status-label">Status</span>
+        <span class="label inline service-card__status-value" [class]="statusClass">
+          {{ serviceStatusText || 'Unknown' }}
+        </span>
+
+        <span class="service-card__status-label">Mode</span>
+        <span class="service-card__mode-value">
+          {{ isAuto ? 'Auto' : 'Manual' }}
+        </span>
+      </div>
+    </div>
+  </div>
+</article>

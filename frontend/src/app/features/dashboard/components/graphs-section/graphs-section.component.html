@@ -1,0 +1,153 @@
+<section class="graphs-section">
+  <div class="graphs-section__header">
+    <mat-icon class="graphs-section__icon" fontIcon="device_thermostat"></mat-icon>
+    <span class="graphs-section__title">History</span>
+  </div>
+
+  <hr class="theme-primary" />
+
+  <div class="graphs-section__body">
+    <div class="chart-loader" *ngIf="loading">
+      <img src="/assets/images/loader.svg" alt="Loading" />
+    </div>
+
+    <div class="filter-row">
+      <div class="filter-cell filter-cell--wide">
+        <mat-radio-group class="graphs-filter-mode" [ngModel]="mode" (ngModelChange)="onModeChange($event)">
+          <mat-radio-button class="mr10" value="daily">Period</mat-radio-button>
+          <mat-radio-button class="mr10" value="hourly">Daily</mat-radio-button>
+          <mat-radio-button class="mr10" value="period">Hourly</mat-radio-button>
+        </mat-radio-group>
+      </div>
+
+      <div class="filter-cell filter-cell--wide" *ngIf="mode === 'daily'">
+        <mat-form-field appearance="outline">
+          <mat-date-range-input [formGroup]="range" [rangePicker]="picker" [max]="maxDate">
+            <input matStartDate formControlName="start" placeholder="Start date" (dateChange)="onRangeDateChanged()" />
+            <input matEndDate formControlName="end" placeholder="End date" (dateChange)="onRangeDateChanged()" />
+          </mat-date-range-input>
+          <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+          <mat-date-range-picker #picker></mat-date-range-picker>
+        </mat-form-field>
+      </div>
+
+      <div class="filter-cell filter-cell--date" *ngIf="mode === 'hourly' || mode === 'period'">
+        <mat-form-field appearance="outline">
+          <input matInput [matDatepicker]="singlePicker" [ngModel]="selectedDate" (ngModelChange)="onSelectedDateModelChange($event)" [max]="maxDate" />
+          <mat-datepicker-toggle matIconSuffix [for]="singlePicker"></mat-datepicker-toggle>
+          <mat-datepicker #singlePicker></mat-datepicker>
+        </mat-form-field>
+      </div>
+
+      <div class="filter-cell filter-cell--hour" *ngIf="mode === 'period'">
+        <mat-form-field appearance="outline">
+          <mat-select [ngModel]="selectedHour" (ngModelChange)="onHourChange($event)">
+            <mat-option *ngFor="let hour of hours" [value]="hour.value" [disabled]="hour.disabled">
+              {{ hour.text }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+    </div>
+
+    <div class="chart-row">
+      <div class="chart-cell">
+        <div class="chart-wrapper">
+          <ngx-charts-line-chart
+            [results]="graphData.get('sensor') || []"
+            [scheme]="'ocean'"
+            [xAxisTickFormatting]="dateTickFormatting"
+            [trimXAxisTicks]="false"
+            [trimYAxisTicks]="false"
+            [legendTitle]="'Temperature'"
+            [legend]="true"
+            [showXAxisLabel]="false"
+            [showYAxisLabel]="false"
+            [xAxis]="true"
+            [yAxis]="true"
+            [gradient]="true"
+            [legendPosition]="legendPosition"
+            [yAxisTicks]="graphBoundaries.get('sensor')?.yAxisTicks || []"
+            [yScaleMin]="graphBoundaries.get('sensor')?.yScaleMin || 0"
+            [yScaleMax]="graphBoundaries.get('sensor')?.yScaleMax || 0"
+            (select)="onChartSelect($event)">
+          </ngx-charts-line-chart>
+        </div>
+      </div>
+
+      <div class="chart-cell">
+        <div class="chart-wrapper">
+          <ngx-charts-line-chart
+            [results]="graphData.get('power') || []"
+            [scheme]="'fire'"
+            [xAxisTickFormatting]="dateTickFormatting"
+            [trimXAxisTicks]="true"
+            [trimYAxisTicks]="false"
+            [legendTitle]="'Fan power'"
+            [legend]="true"
+            [showXAxisLabel]="false"
+            [showYAxisLabel]="false"
+            [xAxis]="true"
+            [yAxis]="true"
+            [gradient]="true"
+            [legendPosition]="legendPosition"
+            [yAxisTicks]="graphBoundaries.get('power')?.yAxisTicks || []"
+            [yScaleMin]="graphBoundaries.get('power')?.yScaleMin || 0"
+            [yScaleMax]="graphBoundaries.get('power')?.yScaleMax || 0"
+            (select)="onChartSelect($event)">
+          </ngx-charts-line-chart>
+        </div>
+      </div>
+    </div>
+
+    <div class="chart-row">
+      <div class="chart-cell">
+        <div class="chart-wrapper">
+          <ngx-charts-line-chart
+            [results]="graphData.get('rpm') || []"
+            [scheme]="'forest'"
+            [xAxisTickFormatting]="dateTickFormatting"
+            [trimXAxisTicks]="true"
+            [trimYAxisTicks]="false"
+            [legendTitle]="'Speed'"
+            [legend]="true"
+            [showXAxisLabel]="false"
+            [showYAxisLabel]="false"
+            [xAxis]="true"
+            [yAxis]="true"
+            [gradient]="true"
+            [legendPosition]="legendPosition"
+            [yAxisTicks]="graphBoundaries.get('rpm')?.yAxisTicks || []"
+            [yScaleMin]="graphBoundaries.get('rpm')?.yScaleMin || 0"
+            [yScaleMax]="graphBoundaries.get('rpm')?.yScaleMax || 0"
+            (select)="onChartSelect($event)">
+          </ngx-charts-line-chart>
+        </div>
+      </div>
+
+      <div class="chart-cell">
+        <div class="chart-wrapper">
+          <ngx-charts-line-chart
+            [results]="graphData.get('humidity') || []"
+            [scheme]="'solar'"
+            [xAxisTickFormatting]="dateTickFormatting"
+            [trimXAxisTicks]="true"
+            [trimYAxisTicks]="false"
+            [legendTitle]="'Relative humidity'"
+            [legend]="true"
+            [showXAxisLabel]="false"
+            [showYAxisLabel]="false"
+            [xAxis]="true"
+            [yAxis]="true"
+            [gradient]="true"
+            [legendPosition]="legendPosition"
+            [yAxisTicks]="graphBoundaries.get('humidity')?.yAxisTicks || []"
+            [yScaleMin]="graphBoundaries.get('humidity')?.yScaleMin || 0"
+            [yScaleMax]="graphBoundaries.get('humidity')?.yScaleMax || 0"
+            (select)="onChartSelect($event)">
+          </ngx-charts-line-chart>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

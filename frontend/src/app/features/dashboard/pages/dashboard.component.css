@@ -1,0 +1,116 @@
+:host {
+  display: block;
+}
+
+.loading-overlay {
+  position: fixed;
+  inset: 0;
+  background-color: var(--bg-page);
+  z-index: 2000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.loading-overlay > img {
+  width: 120px;
+  opacity: 0.7;
+}
+
+.page-shell {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 28px 24px 40px;
+}
+
+.topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.topbar__actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.ghost-button--logout {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.dashboard-layout {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.dashboard-pages {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.dashboard-page {
+  min-width: 0;
+}
+
+.dashboard-row {
+  display: flex;
+  gap: 18px;
+}
+
+.dashboard-row--full {
+  display: block;
+}
+
+.dashboard-cell {
+  flex: 1 1 0;
+  min-width: 0;
+}
+
+@media screen and (max-width: 900px) {
+  .page-shell {
+    padding: 20px 16px 28px;
+  }
+
+  .ghost-button--logout {
+    width: 42px;
+    height: 42px;
+    padding: 0;
+    justify-content: center;
+  }
+
+  .ghost-button--logout span {
+    display: none;
+  }
+
+  .dashboard-pages {
+    flex-direction: row;
+    gap: 16px;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    padding-bottom: 6px;
+  }
+
+  .dashboard-pages::-webkit-scrollbar {
+    display: none;
+  }
+
+  .dashboard-page {
+    flex: 0 0 100%;
+    width: 100%;
+    scroll-snap-align: start;
+  }
+
+  .dashboard-row {
+    flex-direction: column;
+    gap: 16px;
+  }
+}

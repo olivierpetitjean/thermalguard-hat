@@ -1,0 +1,44 @@
+
+(kicad_symbol_lib (version 20211014) (generator kicad_symbol_editor)
+  (symbol "ES1D" (pin_names (offset 1.016)) (in_bom yes) (on_board yes)
+    (property "Reference" "D" (id 0) (at -3.81444 1.75464 0)
+      (effects (font (size 1.27 1.27)) (justify bottom left))
+    )
+    (property "Value" "ES1D" (id 1) (at -3.81107 -3.58241 0)
+      (effects (font (size 1.27 1.27)) (justify bottom left))
+    )
+    (property "Footprint" "DIOM5027-221N" (id 2) (at 0 0 0)
+      (effects (font (size 1.27 1.27)) (justify bottom) hide)
+    )
+    (property "MANUFACTURER" "Fairchild" (id 4) (at 0 0 0)
+      (effects (font (size 1.27 1.27)) (justify bottom) hide)
+    )
+    (symbol "ES1D_0_0"
+      (polyline
+        (pts (xy -1.27 -1.27) (xy 1.27 0.0)) (stroke (width 0.254))
+      )
+      (polyline
+        (pts (xy 1.27 0.0) (xy -1.27 1.27)) (stroke (width 0.254))
+      )
+      (rectangle (start -1.27 -1.27) (end 1.27 1.27)
+        (stroke (width 0.254)) (fill (type background))
+      )
+      (pin passive line (at -5.08 0.0 0) (length 5.08)
+        (name "~"
+          (effects (font (size 1.016 1.016)))
+        )
+        (number "2"
+          (effects (font (size 1.016 1.016)))
+        )
+      )
+      (pin passive line (at 5.08 0.0 180.0) (length 5.08)
+        (name "~"
+          (effects (font (size 1.016 1.016)))
+        )
+        (number "1"
+          (effects (font (size 1.016 1.016)))
+        )
+      )
+    )
+  )
+)

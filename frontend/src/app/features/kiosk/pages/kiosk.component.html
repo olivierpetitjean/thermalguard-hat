@@ -1,0 +1,76 @@
+<div class="kiosk-viewport" [class]="rotationViewportClass">
+  <main class="page-shell kiosk-shell" [class.kiosk-shell--inline]="layoutMode === 'inline'">
+    <section class="kiosk-layout" [class.kiosk-layout--inline]="layoutMode === 'inline'">
+      <div class="kiosk-row kiosk-row--full">
+        <app-kiosk-service-card
+          [serviceStatusText]="serviceStatusText"
+          [serviceTime]="serviceTime"
+          [isAuto]="settings?.Auto ?? false"
+          [boostEnabled]="boostEnabled"
+          [boostRemainText]="boostRemainText">
+        </app-kiosk-service-card>
+      </div>
+
+      <div class="kiosk-row">
+        <div class="kiosk-cell">
+          <app-system-card
+            [systemTemp]="live.sysTemp"
+            [current]="live.current"
+            [systemFan]="live.sysFan"
+            [locale]="display.locale"
+            [temperatureUnit]="display.temperatureUnit">
+          </app-system-card>
+        </div>
+        <div class="kiosk-cell">
+          <app-humidity-card [humidity]="live.humidity"></app-humidity-card>
+        </div>
+      </div>
+
+      <div class="kiosk-row">
+        <div class="kiosk-cell">
+          <app-sensor-card
+            [title]="display.sensor1Name"
+            [temperature]="live.temp1"
+            [power]="live.pwr1"
+            [locale]="display.locale"
+            [temperatureUnit]="display.temperatureUnit">
+          </app-sensor-card>
+        </div>
+        <div class="kiosk-cell">
+          <app-sensor-card
+            [title]="display.sensor2Name"
+            [temperature]="live.temp2"
+            [power]="live.pwr2"
+            [locale]="display.locale"
+            [temperatureUnit]="display.temperatureUnit">
+          </app-sensor-card>
+        </div>
+      </div>
+
+      <div class="kiosk-row">
+        <div class="kiosk-cell">
+          <app-fan-card
+            [title]="display.fan1Name"
+            [rpm]="live.rpm1"
+            [power]="live.pwr1"
+            [disableAnimation]="display.disableFanAnimations"
+            [airflowUnit]="display.airflowUnit"
+            [maxAirflow]="display.fan1MaxAirflow"
+            [maxReference]="maxReferences?.Value1 ?? 0">
+          </app-fan-card>
+        </div>
+        <div class="kiosk-cell">
+          <app-fan-card
+            [title]="display.fan2Name"
+            [rpm]="live.rpm2"
+            [power]="live.pwr2"
+            [disableAnimation]="display.disableFanAnimations"
+            [airflowUnit]="display.airflowUnit"
+            [maxAirflow]="display.fan2MaxAirflow"
+            [maxReference]="maxReferences?.Value2 ?? 0">
+          </app-fan-card>
+        </div>
+      </div>
+    </section>
+  </main>
+</div>

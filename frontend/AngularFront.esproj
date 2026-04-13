@@ -1,0 +1,9 @@
+<Project Sdk="Microsoft.VisualStudio.JavaScript.Sdk/0.5.62-alpha">
+  <PropertyGroup>
+    <StartupCommand>npm start</StartupCommand>
+    <JavaScriptTestFramework>Jasmine</JavaScriptTestFramework>
+    <BuildCommand>npm run build</BuildCommand>
+    <ProductionBuildCommand>npm run build</ProductionBuildCommand>
+    <BuildOutputFolder>$(MSBuildProjectDirectory)\dist\front</BuildOutputFolder>
+  </PropertyGroup>
+</Project>

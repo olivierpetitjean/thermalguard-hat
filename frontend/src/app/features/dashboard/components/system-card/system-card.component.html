@@ -1,0 +1,23 @@
+<article class="dashboard-card">
+  <div class="dashboard-card__icon">
+    <img [src]="iconPath" alt="System" />
+  </div>
+
+  <div class="dashboard-card__content">
+    <div class="dashboard-card__title-row">
+      <h2>System</h2>
+      <span class="status-badge status-badge--alert" *ngIf="systemFan">Fan</span>
+    </div>
+
+    <div class="dashboard-card__metric-row">
+      <span class="dashboard-card__metric-label">Temperature</span>
+      <span class="dashboard-card__metric-value">{{ formattedTemperature }} &deg;{{ temperatureUnit }}</span>
+    </div>
+
+    <div class="dashboard-card__metric-row">
+      <span class="dashboard-card__metric-label">Power</span>
+      <span class="dashboard-card__metric-value">{{ ((current / 1000) * 12) | number:'1.2-2' }} W</span>
+      <span class="dashboard-card__metric-secondary">({{ current | number:'1.0-0' }}mA)</span>
+    </div>
+  </div>
+</article>

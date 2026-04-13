@@ -1,0 +1,185 @@
+:host {
+  display: block;
+}
+
+.graphs-section {
+  position: relative;
+  padding-top: 20px;
+}
+
+.graphs-section__header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 8px 0 10px;
+}
+
+.graphs-section__icon {
+  font-size: 20px;
+  width: 20px;
+  height: 20px;
+  line-height: 20px;
+}
+
+.graphs-section__title {
+  color: var(--text-primary);
+}
+
+.theme-primary {
+  border: 1px solid var(--theme-primary);
+  margin: 0 0 16px;
+}
+
+.graphs-section__body {
+  position: relative;
+}
+
+.chart-loader {
+  position: absolute;
+  inset: 0;
+  background: color-mix(in srgb, var(--bg-page) 80%, transparent);
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.chart-loader img {
+  width: 88px;
+  opacity: 0.7;
+}
+
+.filter-row {
+  display: flex;
+  flex-flow: row wrap;
+  align-items: center;
+  gap: 20px;
+  margin: 24px 0;
+}
+
+.filter-cell {
+  flex: 0 1 auto;
+  display: flex;
+  align-items: center;
+}
+
+.filter-cell--wide {
+  min-width: 250px;
+}
+
+.filter-cell--date,
+.filter-cell--hour {
+  min-width: 180px;
+}
+
+.filter-cell mat-form-field {
+  width: 100%;
+}
+
+.graphs-filter-mode {
+  display: flex;
+  align-items: center;
+  min-height: 42px;
+}
+
+.graphs-filter-mode ::ng-deep .mat-mdc-radio-group {
+  display: flex;
+  align-items: center;
+}
+
+.graphs-filter-mode ::ng-deep .mdc-form-field {
+  align-items: center;
+}
+
+.graphs-filter-mode ::ng-deep .mdc-label {
+  color: var(--text-primary);
+}
+
+.graphs-filter-mode ::ng-deep .mdc-radio__outer-circle {
+  border-color: var(--text-muted);
+}
+
+.graphs-filter-mode ::ng-deep .mdc-radio__inner-circle {
+  border-color: var(--theme-primary);
+}
+
+.graphs-filter-mode ::ng-deep .mdc-radio__background::before {
+  background-color: color-mix(in srgb, var(--theme-primary) 18%, transparent);
+}
+
+.filter-cell ::ng-deep .mat-mdc-form-field-subscript-wrapper {
+  display: none;
+}
+
+.filter-cell ::ng-deep .mdc-notched-outline__leading,
+.filter-cell ::ng-deep .mdc-notched-outline__notch,
+.filter-cell ::ng-deep .mdc-notched-outline__trailing {
+  border-color: var(--card-border-strong) !important;
+}
+
+.filter-cell ::ng-deep .mat-mdc-text-field-wrapper {
+  min-height: 42px;
+  background: var(--card-bg-strong);
+}
+
+.filter-cell ::ng-deep .mat-mdc-form-field-infix {
+  min-height: 42px;
+  padding-top: 10px;
+  padding-bottom: 10px;
+}
+
+.filter-cell ::ng-deep .mat-mdc-form-field-flex {
+  align-items: center;
+}
+
+.filter-cell ::ng-deep .mat-mdc-input-element,
+.filter-cell ::ng-deep .mat-mdc-select-value,
+.filter-cell ::ng-deep .mat-mdc-select-arrow,
+.filter-cell ::ng-deep .mat-datepicker-toggle-default-icon,
+.filter-cell ::ng-deep .mat-mdc-icon-button {
+  color: var(--text-primary) !important;
+}
+
+.filter-cell ::ng-deep .mat-mdc-input-element::placeholder {
+  color: var(--text-muted);
+}
+
+.mr10 {
+  margin-right: 10px;
+}
+
+.chart-row {
+  display: flex;
+  gap: 15px;
+  width: 100%;
+  padding-bottom: 15px;
+}
+
+.chart-cell {
+  position: relative;
+  flex: 1 1 50%;
+  max-width: 500px;
+  width: 100%;
+  padding-bottom: 60px;
+  min-width: 0;
+}
+
+.chart-wrapper {
+  height: 300px;
+}
+
+@media screen and (max-width: 900px) {
+  .chart-row {
+    flex-direction: column;
+  }
+
+  .chart-cell {
+    max-width: none;
+    padding-bottom: 24px;
+  }
+
+  .filter-cell {
+    min-width: 100%;
+    flex: 0 1 100%;
+  }
+}

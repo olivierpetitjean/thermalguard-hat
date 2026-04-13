@@ -1,0 +1,50 @@
+{
+  "name": "front",
+  "version": "0.0.0",
+  "scripts": {
+    "ng": "ng",
+    "start": "ng serve",
+    "build": "ng build",
+    "watch": "ng build --watch --configuration development",
+    "test": "ng test",
+    "test:watch": "ng test --watch",
+    "test:ci": "ng test --watch=false"
+  },
+  "prettier": {
+    "printWidth": 100,
+    "singleQuote": true,
+    "overrides": [
+      {
+        "files": "*.html",
+        "options": {
+          "parser": "angular"
+        }
+      }
+    ]
+  },
+  "private": true,
+  "dependencies": {
+    "@angular/animations": "^20.3.18",
+    "@angular/cdk": "^20.2.14",
+    "@angular/common": "^20.3.0",
+    "@angular/compiler": "^20.3.0",
+    "@angular/core": "^20.3.0",
+    "@angular/forms": "^20.3.0",
+    "@angular/material": "^20.2.14",
+    "@angular/platform-browser": "^20.3.0",
+    "@angular/router": "^20.3.0",
+    "@swimlane/ngx-charts": "^23.1.0",
+    "mqtt": "^5.14.1",
+    "rxjs": "~7.8.0",
+    "tslib": "^2.3.0",
+    "zone.js": "~0.15.0"
+  },
+  "devDependencies": {
+    "@angular/build": "^20.3.3",
+    "@angular/cli": "^20.3.3",
+    "@angular/compiler-cli": "^20.3.0",
+    "jsdom": "^26.1.0",
+    "typescript": "~5.9.2",
+    "vitest": "^3.2.4"
+  }
+}

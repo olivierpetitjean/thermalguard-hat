@@ -1,0 +1,13 @@
+﻿"Symbol";"Value";"Unit";
+"TraceParts.PartNumber";"90-13062022-068329";"";
+"REFERENCE";"SRR1280-331K";"";
+"TraceParts.PartTitle";"SRR1280 Shielded  Power Inductor, 330uH";"";
+"TraceParts.InstanceId";"90-13062022-0683292N3XX9WWY2MK673V115V3T3RA";"";
+"DESIGN";"SRR1280 Shielded  Power Inductor, 330uH";"";
+"TraceParts.PartStatus";"Published";"";
+"TraceParts.PartStatusId";"";"";
+"SUPPLIER";"BOURNS";"";
+"TraceParts.PartVersion";"1.0.0";"";
+"TRACEPARTS";"TRACEPARTS";"";
+"TraceParts.PartLanguage";"en";"";
+"TraceParts.ClassPath";"BOURNS:90-13062022-068329";"";

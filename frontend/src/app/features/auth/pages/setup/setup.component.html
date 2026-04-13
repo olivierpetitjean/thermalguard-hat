@@ -1,0 +1,28 @@
+<section class="auth-shell">
+  <div class="auth-card">
+    <h1>ThermalGuard HAT</h1>
+    <p class="auth-subtitle">Create account</p>
+    <p class="auth-hint">No account exists on this Pi yet. Create the initial credentials.</p>
+
+    <label>
+      <span>Username</span>
+      <input [(ngModel)]="username" autocomplete="username" />
+    </label>
+
+    <label>
+      <span>Password</span>
+      <input [(ngModel)]="password" type="password" autocomplete="new-password" />
+    </label>
+
+    <label>
+      <span>Confirm password</span>
+      <input [(ngModel)]="confirm" type="password" autocomplete="new-password" (keyup.enter)="submit()" />
+    </label>
+
+    <p class="auth-error" *ngIf="error">{{ error }}</p>
+
+    <button type="button" (click)="submit()" [disabled]="loading">
+      {{ loading ? 'Creating account...' : 'Create account' }}
+    </button>
+  </div>
+</section>

@@ -1,0 +1,9 @@
+EESchema-DOCLIB  Version 2.0
+#
+$CMP CMI-1210-90-SMT-TR
+D Piezo Buzzers & Audio Indicators buzzer, 12.8 mm x 12.8 mm x 10 mm deep, M, 5 V, 90 dB, Surface Mount, Audio Indicator
+K
+F https://www.mouser.de/datasheet/2/670/cmi_1210_90_smt_tr-1776767.pdf
+$ENDCMP
+#
+#End Doc Library

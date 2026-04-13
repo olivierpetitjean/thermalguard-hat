@@ -1,0 +1,32 @@
+<article class="dashboard-card">
+  <span class="status-pill" [class.status-pill--success]="rpm > 0" [class.status-pill--error]="rpm <= 0">
+    {{ status }}
+  </span>
+
+  <div class="dashboard-card__icon dashboard-card__icon--fan-shell">
+    <div class="dashboard-card__fan-shell" [style.background-image]="'url(' + shellPath + ')'">
+      <img class="dashboard-card__fan-blade" [class]="animationClass" [src]="bladePath" [alt]="title" />
+    </div>
+  </div>
+
+  <div class="dashboard-card__content">
+    <div class="dashboard-card__title-row">
+      <h2>{{ title }}</h2>
+    </div>
+
+    <div class="dashboard-card__metric-row">
+      <span class="dashboard-card__metric-label">Speed</span>
+      <span class="dashboard-card__metric-value">{{ rpm | number:'1.2-2' }} RPM</span>
+      <span class="dashboard-card__metric-secondary">({{ speedPercent | number:'1.2-2' }}%)</span>
+    </div>
+
+    <div class="dashboard-card__metric-row">
+      <span class="dashboard-card__metric-label">Airflow</span>
+      <span class="dashboard-card__metric-value">{{ airflow | number:'1.2-2' }} {{ airflowUnitLabel }}</span>
+    </div>
+
+    <div class="dashboard-progress">
+      <div class="dashboard-progress__fill" [style.width.%]="speedPercent"></div>
+    </div>
+  </div>
+</article>

@@ -1,0 +1,9 @@
+EESchema-DOCLIB  Version 2.0
+#
+$CMP MCP3004-I_SL
+D A/D Converter 10Bit 4-ch 2.7V SPI SOIC14
+K
+F https://datasheet.datasheetarchive.com/originals/distributors/Datasheets-304/55396.pdf
+$ENDCMP
+#
+#End Doc Library

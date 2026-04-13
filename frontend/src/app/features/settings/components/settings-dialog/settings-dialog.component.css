@@ -1,0 +1,289 @@
+:host {
+  display: block;
+  width: 100%;
+}
+
+.settings-dialog {
+  width: 100%;
+  max-width: 100%;
+  color: var(--text-primary);
+}
+
+.settings-dialog__header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 24px 24px 0;
+}
+
+.settings-dialog__eyebrow {
+  margin: 0 0 6px;
+  color: var(--text-label);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.settings-dialog__header h2 {
+  margin: 0;
+  color: var(--text-strong);
+  font-size: 1.75rem;
+  font-weight: 700;
+}
+
+.settings-dialog__content {
+  padding: 20px 24px 0;
+  max-height: none;
+}
+
+.settings-dialog__toolbar {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.settings-dialog__intro h3 {
+  margin: 0 0 6px;
+  color: var(--text-strong);
+  font-size: 1.15rem;
+  font-weight: 700;
+}
+
+.settings-dialog__intro p {
+  margin: 0;
+  max-width: 560px;
+  color: var(--text-muted);
+  line-height: 1.5;
+}
+
+.settings-dialog__mode-toggle {
+  flex-shrink: 0;
+}
+
+.settings-dialog__mode-help {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+  border: 1px solid var(--card-border-strong);
+  border-radius: 12px;
+  background: color-mix(in srgb, var(--card-bg-strong) 84%, transparent);
+  margin-bottom: 18px;
+}
+
+.settings-dialog__mode-help mat-icon {
+  width: 24px;
+  height: 24px;
+  font-size: 24px;
+  color: var(--theme-primary);
+}
+
+.settings-dialog__mode-help p {
+  margin: 0;
+  color: var(--text-soft);
+  line-height: 1.5;
+}
+
+.settings-dialog__loading {
+  min-height: 280px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.settings-dialog__loading-card {
+  color: var(--text-muted);
+  background: var(--card-bg-strong);
+  border: 1px solid var(--card-border-strong);
+  border-radius: 999px;
+  padding: 10px 16px;
+  box-shadow: var(--shadow-card);
+}
+
+.settings-dialog__rules {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.settings-dialog__rule-card {
+  border: 1px solid var(--card-border-strong);
+  border-radius: 12px;
+  background: var(--card-bg-strong);
+  padding: 16px;
+}
+
+.settings-dialog__rule-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.settings-dialog__rule-index {
+  margin: 0 0 6px;
+  color: var(--text-label);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.settings-dialog__rule-header h4 {
+  margin: 0;
+  color: var(--text-strong);
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+.settings-dialog__rule-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.settings-dialog__rule-grid--independent {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.settings-dialog__feedback {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 16px;
+}
+
+.settings-dialog__feedback-item {
+  margin: 0;
+  padding: 10px 12px;
+  border-radius: 10px;
+  font-size: 0.94rem;
+}
+
+.settings-dialog__feedback-item--error {
+  color: #ffd7df;
+  background: color-mix(in srgb, #c2185b 24%, transparent);
+  border: 1px solid color-mix(in srgb, #c2185b 46%, transparent);
+}
+
+.settings-dialog__feedback-item--success {
+  color: #d8ffe6;
+  background: color-mix(in srgb, #009f4d 24%, transparent);
+  border: 1px solid color-mix(in srgb, #009f4d 46%, transparent);
+}
+
+.settings-dialog__actions {
+  padding: 16px 24px 24px;
+  gap: 10px;
+}
+
+::ng-deep .settings-dialog .mat-mdc-dialog-surface {
+  background: var(--card-bg);
+  color: var(--text-primary);
+}
+
+::ng-deep .settings-dialog .mat-mdc-dialog-title {
+  color: var(--text-strong) !important;
+}
+
+::ng-deep .settings-dialog .mat-mdc-dialog-content {
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+::ng-deep .settings-dialog .mat-mdc-button:not(:disabled) {
+  color: var(--text-primary);
+}
+
+::ng-deep .settings-dialog .mat-button-toggle-group {
+  border-color: var(--card-border-strong);
+  background: var(--card-bg-strong);
+}
+
+::ng-deep .settings-dialog .mat-button-toggle-appearance-standard {
+  color: var(--text-soft);
+  background: var(--card-bg-strong);
+}
+
+::ng-deep .settings-dialog .mat-button-toggle-appearance-standard .mat-button-toggle-label-content {
+  color: var(--text-soft) !important;
+}
+
+::ng-deep .settings-dialog .mat-button-toggle-checked {
+  color: var(--text-strong);
+  background: color-mix(in srgb, var(--theme-primary) 18%, transparent);
+}
+
+::ng-deep .settings-dialog .mat-button-toggle-checked .mat-button-toggle-label-content {
+  color: var(--text-strong) !important;
+}
+
+::ng-deep .settings-dialog .mat-mdc-form-field {
+  width: 100%;
+}
+
+::ng-deep .settings-dialog .mat-mdc-form-field .mdc-text-field--outlined {
+  background: var(--card-bg-strong);
+}
+
+::ng-deep .settings-dialog .mat-mdc-form-field .mdc-floating-label,
+::ng-deep .settings-dialog .mat-mdc-form-field input {
+  color: var(--text-primary) !important;
+}
+
+::ng-deep .settings-dialog .mat-mdc-form-field .mdc-notched-outline__leading,
+::ng-deep .settings-dialog .mat-mdc-form-field .mdc-notched-outline__notch,
+::ng-deep .settings-dialog .mat-mdc-form-field .mdc-notched-outline__trailing {
+  border-color: var(--card-border-strong) !important;
+}
+
+::ng-deep .settings-dialog .mat-mdc-icon-button {
+  color: var(--text-soft) !important;
+}
+
+::ng-deep .settings-dialog .mat-mdc-outlined-button {
+  border-color: var(--card-border-strong) !important;
+  color: var(--text-soft) !important;
+  background: var(--card-bg-strong);
+}
+
+::ng-deep .settings-dialog .mat-mdc-unelevated-button:not(:disabled) {
+  color: var(--text-strong) !important;
+}
+
+@media screen and (max-width: 767px) {
+  .settings-dialog__header {
+    padding: 20px 16px 0;
+  }
+
+  .settings-dialog__content {
+    padding: 16px 16px 0;
+  }
+
+  .settings-dialog__actions {
+    padding: 12px 16px 16px;
+  }
+
+  .settings-dialog__toolbar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .settings-dialog__mode-help {
+    align-items: flex-start;
+  }
+
+  .settings-dialog__rule-grid,
+  .settings-dialog__rule-grid--independent {
+    grid-template-columns: 1fr;
+  }
+
+  .settings-dialog__loading {
+    min-height: calc(100vh - 280px);
+  }
+}

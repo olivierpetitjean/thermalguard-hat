@@ -1,0 +1,95 @@
+<h2 mat-dialog-title>System info</h2>
+
+<mat-dialog-content class="system-info-dialog">
+  <div class="system-info-dialog__toolbar">
+    <button
+      *ngFor="let option of windowOptions"
+      type="button"
+      mat-stroked-button
+      [class.system-info-dialog__range-button--active]="selectedWindow === option.value"
+      (click)="selectWindow(option.value)">
+      {{ option.label }}
+    </button>
+  </div>
+
+  <div class="system-info-dialog__content">
+    <div class="system-info-dialog__loading" *ngIf="loading">
+      <div class="system-info-dialog__loading-card">Loading system metrics...</div>
+    </div>
+
+    <div class="system-info-dialog__graphs" [class.system-info-dialog__graphs--loading]="loading">
+    <section class="system-info-dialog__chart-card">
+      <header class="system-info-dialog__chart-header">
+        <h3>CPU</h3>
+        <span>Usage %</span>
+      </header>
+      <ngx-charts-line-chart
+        [view]="chartView"
+        [results]="cpuSeries"
+        [scheme]="cpuScheme"
+        [xAxisTickFormatting]="dateTickFormatting"
+        [yAxisTicks]="[0, 20, 40, 60, 80, 100]"
+        [yScaleMin]="0"
+        [yScaleMax]="100"
+        [legend]="false"
+        [showXAxisLabel]="false"
+        [showYAxisLabel]="false"
+        [xAxis]="true"
+        [yAxis]="true"
+        [gradient]="false"
+        [autoScale]="false">
+      </ngx-charts-line-chart>
+    </section>
+
+    <section class="system-info-dialog__chart-card">
+      <header class="system-info-dialog__chart-header">
+        <h3>RAM</h3>
+        <span>Usage %</span>
+      </header>
+      <ngx-charts-line-chart
+        [view]="chartView"
+        [results]="memorySeries"
+        [scheme]="memoryScheme"
+        [xAxisTickFormatting]="dateTickFormatting"
+        [yAxisTicks]="[0, 20, 40, 60, 80, 100]"
+        [yScaleMin]="0"
+        [yScaleMax]="100"
+        [legend]="false"
+        [showXAxisLabel]="false"
+        [showYAxisLabel]="false"
+        [xAxis]="true"
+        [yAxis]="true"
+        [gradient]="false"
+        [autoScale]="false">
+      </ngx-charts-line-chart>
+    </section>
+
+    <section class="system-info-dialog__chart-card">
+      <header class="system-info-dialog__chart-header">
+        <h3>Disk</h3>
+        <span>Usage %</span>
+      </header>
+      <ngx-charts-line-chart
+        [view]="chartView"
+        [results]="diskSeries"
+        [scheme]="diskScheme"
+        [xAxisTickFormatting]="dateTickFormatting"
+        [yAxisTicks]="[0, 20, 40, 60, 80, 100]"
+        [yScaleMin]="0"
+        [yScaleMax]="100"
+        [legend]="false"
+        [showXAxisLabel]="false"
+        [showYAxisLabel]="false"
+        [xAxis]="true"
+        [yAxis]="true"
+        [gradient]="false"
+        [autoScale]="false">
+      </ngx-charts-line-chart>
+    </section>
+    </div>
+  </div>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button mat-dialog-close>Close</button>
+</mat-dialog-actions>

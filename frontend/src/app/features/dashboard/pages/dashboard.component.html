@@ -1,0 +1,140 @@
+<main class="page-shell">
+  <div class="loading-overlay" *ngIf="appLoading">
+    <img src="/assets/images/loader.svg" alt="Loading dashboard" />
+  </div>
+
+  <header class="topbar">
+    <div>
+      <p class="eyebrow">ThermalGuard HAT</p>
+      <h1>{{ display.dashboardTitle }}</h1>
+    </div>
+    <div class="topbar__actions">
+      <button
+        type="button"
+        class="ghost-button ghost-button--icon"
+        (click)="themeService.toggleTheme()"
+        [attr.aria-label]="themeService.theme() === 'dark' ? 'Enable light theme' : 'Enable dark theme'">
+        <mat-icon [fontIcon]="themeService.theme() === 'dark' ? 'light_mode' : 'dark_mode'"></mat-icon>
+      </button>
+      <button
+        type="button"
+        class="ghost-button ghost-button--icon"
+        aria-label="Open settings"
+        (click)="openSettings()">
+        <mat-icon fontIcon="settings"></mat-icon>
+      </button>
+      <button type="button" class="ghost-button ghost-button--logout" (click)="logout()" aria-label="Logout">
+        <mat-icon fontIcon="logout"></mat-icon>
+        <span>Logout</span>
+      </button>
+    </div>
+  </header>
+
+  <section class="dashboard-pages">
+    <div class="dashboard-page dashboard-page--cards">
+      <section class="dashboard-layout">
+        <div class="dashboard-row dashboard-row--full">
+          <app-service-card
+            [serviceStatusText]="serviceStatusText"
+            [serviceTime]="serviceTime"
+            [isAuto]="settings?.Auto ?? false"
+            [isMqttConnected]="isMqttConnected"
+            [autoWaiting]="autoWaiting"
+            [serviceCommandWait]="serviceCommandWait"
+            [boostEnabled]="boostEnabled"
+            [boostRemainText]="boostRemainText"
+            [boostPending]="boostPending"
+            [boostCancelPending]="boostCancelPending"
+            [lastBoostValue]="lastBoostValue"
+            [fan1Power]="settings?.Fan1Pwr ?? live.pwr1"
+            [fan2Power]="settings?.Fan2Pwr ?? live.pwr2"
+            [fan1Name]="display.fan1Name"
+            [fan2Name]="display.fan2Name"
+            (autoChanged)="onAutoChanged($event)"
+            (fan1PowerChanged)="onFan1PowerChanged($event)"
+            (fan2PowerChanged)="onFan2PowerChanged($event)"
+            (restart)="restartService()"
+            (start)="startService()"
+            (stop)="stopService()"
+            (systemInfo)="openSystemInfo()"
+            (boost)="boost($event)"
+            (boostPresetChanged)="lastBoostValue = $event"
+            (cancelBoost)="cancelBoost()">
+          </app-service-card>
+        </div>
+
+        <div class="dashboard-row">
+          <div class="dashboard-cell">
+            <app-system-card
+              [systemTemp]="live.sysTemp"
+              [current]="live.current"
+              [systemFan]="live.sysFan"
+              [locale]="display.locale"
+              [temperatureUnit]="display.temperatureUnit">
+            </app-system-card>
+          </div>
+          <div class="dashboard-cell">
+            <app-humidity-card [humidity]="live.humidity"></app-humidity-card>
+          </div>
+        </div>
+
+        <div class="dashboard-row">
+          <div class="dashboard-cell">
+            <app-sensor-card
+              [title]="display.sensor1Name"
+              [temperature]="live.temp1"
+              [power]="live.pwr1"
+              [locale]="display.locale"
+              [temperatureUnit]="display.temperatureUnit">
+            </app-sensor-card>
+          </div>
+          <div class="dashboard-cell">
+            <app-sensor-card
+              [title]="display.sensor2Name"
+              [temperature]="live.temp2"
+              [power]="live.pwr2"
+              [locale]="display.locale"
+              [temperatureUnit]="display.temperatureUnit">
+            </app-sensor-card>
+          </div>
+        </div>
+
+        <div class="dashboard-row">
+          <div class="dashboard-cell">
+            <app-fan-card
+              [title]="display.fan1Name"
+              [rpm]="live.rpm1"
+              [power]="live.pwr1"
+              [disableAnimation]="display.disableFanAnimations"
+              [airflowUnit]="display.airflowUnit"
+              [maxAirflow]="display.fan1MaxAirflow"
+              [maxReference]="maxReferences?.Value1 ?? 0">
+            </app-fan-card>
+          </div>
+          <div class="dashboard-cell">
+            <app-fan-card
+              [title]="display.fan2Name"
+              [rpm]="live.rpm2"
+              [power]="live.pwr2"
+              [disableAnimation]="display.disableFanAnimations"
+              [airflowUnit]="display.airflowUnit"
+              [maxAirflow]="display.fan2MaxAirflow"
+              [maxReference]="maxReferences?.Value2 ?? 0">
+            </app-fan-card>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <div class="dashboard-page dashboard-page--history">
+      <app-graphs-section
+        [sensor1Name]="display.sensor1Name"
+        [sensor2Name]="display.sensor2Name"
+        [fan1Name]="display.fan1Name"
+        [fan2Name]="display.fan2Name"
+        [locale]="display.locale"
+        [temperatureUnit]="display.temperatureUnit">
+      </app-graphs-section>
+    </div>
+  </section>
+</main>

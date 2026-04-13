@@ -1,0 +1,208 @@
+:host {
+  display: contents;
+}
+
+.service-card {
+  align-items: center;
+  gap: 20px;
+  min-height: 0;
+}
+
+.service-card__body {
+  width: 100%;
+  align-items: center;
+}
+
+.service-card__summary h3 {
+  margin: 0 0 5px;
+  color: var(--text-soft);
+  font-size: 1.05rem;
+  font-weight: 600;
+}
+
+.service-card__summary,
+.service-card__status-block {
+  position: relative;
+}
+
+.service-card__status-block {
+  min-width: 220px;
+  margin-left: auto;
+}
+
+.flex-row {
+  display: flex;
+  flex-direction: row;
+  gap: 20px;
+  line-height: 21px;
+}
+
+.flex-wrap {
+  padding-bottom: 0;
+  flex-flow: row wrap;
+}
+
+.flex-row.nogap {
+  gap: 0;
+}
+
+.temp {
+  max-width: 80px;
+  width: 100%;
+  min-width: 50px;
+  display: flex;
+}
+
+.temp img {
+  width: 100%;
+  height: auto;
+}
+
+.card-icon {
+  max-width: 80px;
+  width: 100%;
+  height: auto;
+}
+
+.light {
+  color: var(--text-label);
+}
+
+.label {
+  font-size: 10px;
+  background-color: var(--status-bg);
+  display: inline-block;
+  padding: 3px 5px;
+  border-radius: 3px;
+  color: #fff;
+  line-height: 10px;
+  position: absolute;
+  right: 15px;
+  top: 15px;
+}
+
+.label.inline {
+  vertical-align: middle;
+  margin-left: 5px;
+  position: relative !important;
+  top: initial !important;
+  right: initial !important;
+}
+
+.label.inline-left {
+  vertical-align: middle;
+  position: relative !important;
+  top: initial !important;
+  right: initial !important;
+}
+
+.label.success {
+  background-color: #008024;
+}
+
+.label.boost {
+  background-color: #eb7200;
+  animation: blink 2s linear infinite;
+}
+
+.label.error {
+  background-color: #ab002b;
+  animation: blink 2s linear infinite;
+}
+
+.vmiddle {
+  vertical-align: middle;
+}
+
+.toggle-wrapper {
+  margin-top: 35px;
+  margin-left: 40px;
+  display: grid;
+  grid-template-columns: auto auto;
+  align-items: center;
+  column-gap: 14px;
+  row-gap: 8px;
+}
+
+.service-card__status-label {
+  color: var(--text-primary);
+}
+
+.service-card__status-value,
+.service-card__toggle-value {
+  justify-self: start;
+}
+
+.service-card__mode-value {
+  color: var(--text-primary);
+}
+
+@keyframes blink {
+  0%,
+  50% {
+    visibility: hidden;
+  }
+
+  100% {
+    visibility: visible;
+  }
+}
+
+@media screen and (max-width: 900px) {
+  .service-card {
+    align-items: flex-start;
+  }
+
+  .toggle-wrapper {
+    margin-top: 20px;
+    margin-left: 0;
+  }
+}
+
+:host-context(.kiosk-shell--inline) .service-card {
+  gap: 12px;
+  padding: 12px;
+  align-items: stretch;
+}
+
+:host-context(.kiosk-shell--inline) .temp,
+:host-context(.kiosk-shell--inline) .card-icon {
+  max-width: 52px;
+  min-width: 40px;
+}
+
+:host-context(.kiosk-shell--inline) .service-card__body {
+  align-items: flex-start;
+}
+
+:host-context(.kiosk-shell--inline) .service-card__summary h3 {
+  font-size: 0.96rem;
+}
+
+:host-context(.kiosk-shell--inline) .service-card__status-block {
+  min-width: 0;
+  margin-left: 0;
+}
+
+:host-context(.kiosk-shell--inline) .flex-row {
+  gap: 12px;
+}
+
+:host-context(.kiosk-shell--inline) .toggle-wrapper {
+  margin-top: 6px;
+  margin-left: 0;
+  column-gap: 10px;
+  row-gap: 5px;
+}
+
+:host-context(.kiosk-shell--inline) .service-card__status-label,
+:host-context(.kiosk-shell--inline) .service-card__mode-value,
+:host-context(.kiosk-shell--inline) .light,
+:host-context(.kiosk-shell--inline) .vmiddle {
+  font-size: 0.78rem;
+}
+
+:host-context(.kiosk-shell--inline) .label {
+  top: 8px;
+  right: 8px;
+}

@@ -1,0 +1,92 @@
+{
+  "$schema": "./node_modules/@angular/cli/lib/config/schema.json",
+  "version": 1,
+  "cli": {
+    "packageManager": "npm",
+    "analytics": false
+  },
+  "newProjectRoot": "projects",
+  "projects": {
+    "front": {
+      "projectType": "application",
+      "schematics": {},
+      "root": "",
+      "sourceRoot": "src",
+      "prefix": "app",
+      "architect": {
+        "build": {
+          "builder": "@angular/build:application",
+          "options": {
+            "browser": "src/main.ts",
+            "polyfills": [
+              "zone.js"
+            ],
+            "tsConfig": "tsconfig.app.json",
+            "assets": [
+              {
+                "glob": "**/*",
+                "input": "public"
+              }
+            ],
+            "styles": [
+              "@angular/material/prebuilt-themes/pink-bluegrey.css",
+              "src/styles.css"
+            ]
+          },
+          "configurations": {
+            "production": {
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.prod.ts"
+                }
+              ],
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "1.8MB",
+                  "maximumError": "2.2MB"
+                },
+                {
+                  "type": "anyComponentStyle",
+                  "maximumWarning": "6kB",
+                  "maximumError": "10kB"
+                }
+              ],
+              "outputHashing": "all"
+            },
+            "development": {
+              "optimization": false,
+              "extractLicenses": false,
+              "sourceMap": true
+            }
+          },
+          "defaultConfiguration": "production"
+        },
+        "serve": {
+          "builder": "@angular/build:dev-server",
+          "configurations": {
+            "production": {
+              "buildTarget": "front:build:production"
+            },
+            "development": {
+              "buildTarget": "front:build:development"
+            }
+          },
+          "defaultConfiguration": "development"
+        },
+        "test": {
+          "builder": "@angular/build:unit-test",
+          "options": {
+            "tsConfig": "tsconfig.spec.json",
+            "runner": "vitest",
+            "buildTarget": "front:build:development"
+          }
+        },
+        "extract-i18n": {
+          "builder": "@angular/build:extract-i18n"
+        }
+      }
+    }
+  }
+}

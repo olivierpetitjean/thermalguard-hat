@@ -11,7 +11,7 @@ This repository contains both the hardware design and the software stack:
 
 ## Demo
 
-https://github.com/user-attachments/assets/5256e6de-0484-4bef-b895-a79b62438027
+https://github.com/user-attachments/assets/547ba5f1-9dda-4290-b39c-db074ba426f6
 
 ## Board Renders And Wiring
 
@@ -178,7 +178,7 @@ The web interface provides both live monitoring cards and historical charts.
 
 ThermalGuard HAT can run in kiosk mode for a dedicated rack display, with optional autologin, Chromium autostart, cursor hiding and screen blanking control.
 
-https://github.com/user-attachments/assets/4835362a-f0eb-4a68-aef2-a2beec968b18
+https://github.com/user-attachments/assets/b98a219e-978e-4593-a772-88bbc4d270f7
 
 ## Installation
 

@@ -38,7 +38,10 @@ public class SettingsServiceTests
             var updated = service.Update(new SettingsUpdateModel
             {
                 Auto = false,
-                LinkedMode = false,
+                LinkedMode = true,
+                ControlMode = "differential",
+                LinkedSensor = "sensor2",
+                DifferentialMode = "sensor2_minus_sensor1",
                 Fan1Pwr = 42,
                 Fan2Pwr = 64,
                 Beep = false,
@@ -57,7 +60,10 @@ public class SettingsServiceTests
         var settings = verificationDb.GlobalSettings.Should().ContainSingle().Subject;
 
         settings.Auto.Should().BeFalse();
-        settings.LinkedMode.Should().BeFalse();
+        settings.LinkedMode.Should().BeTrue();
+        settings.ControlMode.Should().Be("differential");
+        settings.LinkedSensor.Should().Be("sensor2");
+        settings.DifferentialMode.Should().Be("sensor2_minus_sensor1");
         settings.Fan1Pwr.Should().Be(42);
         settings.Fan2Pwr.Should().Be(64);
         settings.Beep.Should().BeFalse();

@@ -3,7 +3,18 @@ import time
 from datetime import datetime, timedelta
 from threading import Thread
 
-from utils import debug_print, Verbose, get_fans_power_reference, restart_service, reboot_system
+from utils import (
+    CONTROL_MODE_DIFFERENTIAL,
+    CONTROL_MODE_INDEPENDENT,
+    CONTROL_MODE_LINKED_FANS,
+    DIFFERENTIAL_SENSOR1_MINUS_SENSOR2,
+    LINKED_SENSOR_1,
+    debug_print,
+    Verbose,
+    get_fans_power_reference,
+    restart_service,
+    reboot_system,
+)
 
 
 FAN_MODES = {True: "Auto", False: "Manual"}
@@ -31,6 +42,9 @@ class TemperatureService:
         # Fan state
         self._auto = True
         self._linked_mode = True
+        self._control_mode = CONTROL_MODE_LINKED_FANS
+        self._linked_sensor = LINKED_SENSOR_1
+        self._differential_mode = DIFFERENTIAL_SENSOR1_MINUS_SENSOR2
         self._force_fp1 = 15
         self._force_fp2 = 15
         self._fp1 = 0
@@ -96,13 +110,17 @@ class TemperatureService:
         self._mac = mac
 
         self._auto = bool(global_settings['Auto'])
-        self._linked_mode = bool(global_settings['LinkedMode']) if 'LinkedMode' in global_settings.keys() else True
+        self._control_mode = self._normalize_control_mode(global_settings)
+        self._linked_mode = self._control_mode != CONTROL_MODE_INDEPENDENT
+        self._linked_sensor = self._normalize_linked_sensor(global_settings)
+        self._differential_mode = self._normalize_differential_mode(global_settings)
         self._force_fp1 = int(global_settings['Fan1Pwr'])
         self._force_fp2 = int(global_settings['Fan2Pwr'])
         self._beep_enabled = bool(global_settings['Beep'])
         debug_print(
             f"Initializing service with auto={self._auto}, {self._fan1_name}={self._force_fp1}, "
-            f"{self._fan2_name}={self._force_fp2}, linked={self._linked_mode}, beep={self._beep_enabled}",
+            f"{self._fan2_name}={self._force_fp2}, mode={self._control_mode}, "
+            f"linked_sensor={self._linked_sensor}, differential={self._differential_mode}, beep={self._beep_enabled}",
             Verbose.INFO,
         )
 
@@ -224,6 +242,14 @@ class TemperatureService:
                 if self._s1temp == 0 and self._s2temp == 0:
                     debug_print("Both temperature sensors unavailable, skipping fan update.", Verbose.WARNING)
                     return
+                if self._control_mode == CONTROL_MODE_LINKED_FANS:
+                    selected_temp = self._s2temp if self._linked_sensor == "sensor2" else self._s1temp
+                    if selected_temp == 0:
+                        debug_print("Selected trigger sensor unavailable, skipping linked fan update.", Verbose.WARNING)
+                        return
+                if self._control_mode == CONTROL_MODE_DIFFERENTIAL and (self._s1temp == 0 or self._s2temp == 0):
+                    debug_print("Differential mode requires both sensors, skipping fan update.", Verbose.WARNING)
+                    return
                 if self._last_fan_update and \
                    (datetime.now() - self._last_fan_update).total_seconds() < self._fan_tempo_seconds:
                     debug_print("Fan update skipped due to anti-flap tempo.", Verbose.DEBUG)
@@ -232,13 +258,17 @@ class TemperatureService:
                     self._s1temp,
                     self._s2temp,
                     self._conditions,
-                    self._linked_mode,
+                    linked_mode=self._linked_mode,
+                    control_mode=self._control_mode,
+                    linked_sensor=self._linked_sensor,
+                    differential_mode=self._differential_mode,
                 )
                 self._fp1 = pr['Value1']
                 self._fp2 = pr['Value2']
                 debug_print(
                     f"Auto mode target power computed: {self._fan1_name}={self._fp1}, {self._fan2_name}={self._fp2}, "
-                    f"{self._sensor1_name}={self._s1temp}, {self._sensor2_name}={self._s2temp}, linked={self._linked_mode}",
+                    f"{self._sensor1_name}={self._s1temp}, {self._sensor2_name}={self._s2temp}, "
+                    f"mode={self._control_mode}",
                     Verbose.DEBUG,
                 )
             else:
@@ -610,3 +640,25 @@ class TemperatureService:
         self._db.close()
         self._gpio.dispose()
         debug_print("Service shutdown complete.", Verbose.INFO)
+
+    def _normalize_control_mode(self, global_settings):
+        if 'ControlMode' in global_settings.keys():
+            value = str(global_settings['ControlMode']).strip().lower()
+            if value in {CONTROL_MODE_LINKED_FANS, CONTROL_MODE_INDEPENDENT, CONTROL_MODE_DIFFERENTIAL}:
+                return value
+        legacy_linked_mode = bool(global_settings['LinkedMode']) if 'LinkedMode' in global_settings.keys() else True
+        return CONTROL_MODE_LINKED_FANS if legacy_linked_mode else CONTROL_MODE_INDEPENDENT
+
+    def _normalize_linked_sensor(self, global_settings):
+        if 'LinkedSensor' in global_settings.keys():
+            value = str(global_settings['LinkedSensor']).strip().lower()
+            if value == "sensor2":
+                return "sensor2"
+        return LINKED_SENSOR_1
+
+    def _normalize_differential_mode(self, global_settings):
+        if 'DifferentialMode' in global_settings.keys():
+            value = str(global_settings['DifferentialMode']).strip().lower()
+            if value == "sensor2_minus_sensor1":
+                return "sensor2_minus_sensor1"
+        return DIFFERENTIAL_SENSOR1_MINUS_SENSOR2

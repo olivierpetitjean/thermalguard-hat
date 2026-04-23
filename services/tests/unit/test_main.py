@@ -57,7 +57,16 @@ class FakeDatabase:
         self.connected = True
 
     def read_global_settings(self):
-        return {"Auto": True, "LinkedMode": True, "Fan1Pwr": 15, "Fan2Pwr": 15, "Beep": True}
+        return {
+            "Auto": True,
+            "LinkedMode": True,
+            "ControlMode": "linked_fans",
+            "LinkedSensor": "sensor1",
+            "DifferentialMode": "sensor1_minus_sensor2",
+            "Fan1Pwr": 15,
+            "Fan2Pwr": 15,
+            "Beep": True,
+        }
 
     def get_conditions(self):
         return [{"MinTemp1": 20, "MinTemp2": 20, "Value1": 30, "Value2": 30}]
@@ -168,7 +177,16 @@ def test_main_should_bootstrap_components_and_register_shutdown(monkeypatch):
     assert mqtt._client.on_message == service.on_message
     assert service.init_calls == [
         (
-            {"Auto": True, "LinkedMode": True, "Fan1Pwr": 15, "Fan2Pwr": 15, "Beep": True},
+            {
+                "Auto": True,
+                "LinkedMode": True,
+                "ControlMode": "linked_fans",
+                "LinkedSensor": "sensor1",
+                "DifferentialMode": "sensor1_minus_sensor2",
+                "Fan1Pwr": 15,
+                "Fan2Pwr": 15,
+                "Beep": True,
+            },
             [{"MinTemp1": 20, "MinTemp2": 20, "Value1": 30, "Value2": 30}],
             "192.168.1.20",
             "AA:BB:CC:DD:EE:FF",

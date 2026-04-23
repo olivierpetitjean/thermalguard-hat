@@ -31,7 +31,7 @@ public class SqliteSchemaUpgraderTests
     }
 
     [Fact]
-    public void UpgradeLegacySchema_ShouldAddLinkedModeColumn_WhenMissing()
+    public void UpgradeLegacySchema_ShouldAddControlColumns_WhenMissing()
     {
         var dbPath = Path.Combine(Path.GetTempPath(), $"thermalguardhat-upgrader-{Guid.NewGuid():N}.db");
         var connectionString = $"Data Source={dbPath}";
@@ -62,6 +62,9 @@ public class SqliteSchemaUpgraderTests
                 }
 
                 columns.Should().Contain("LinkedMode");
+                columns.Should().Contain("ControlMode");
+                columns.Should().Contain("LinkedSensor");
+                columns.Should().Contain("DifferentialMode");
             }
         }
         finally
@@ -85,7 +88,10 @@ public class SqliteSchemaUpgraderTests
                     CREATE TABLE GlobalSettings (
                         Id TEXT PRIMARY KEY,
                         Auto INTEGER NOT NULL,
-                        LinkedMode INTEGER NOT NULL DEFAULT 1
+                        LinkedMode INTEGER NOT NULL DEFAULT 1,
+                        ControlMode TEXT NOT NULL DEFAULT 'linked_fans',
+                        LinkedSensor TEXT NOT NULL DEFAULT 'sensor1',
+                        DifferentialMode TEXT NOT NULL DEFAULT 'sensor1_minus_sensor2'
                     );
                     """;
                 command.ExecuteNonQuery();
@@ -101,16 +107,71 @@ public class SqliteSchemaUpgraderTests
 
                 using var reader = pragma.ExecuteReader();
                 var linkedModeColumnCount = 0;
+                var controlModeColumnCount = 0;
                 while (reader.Read())
                 {
-                    if (string.Equals(reader["name"]?.ToString(), "LinkedMode", StringComparison.OrdinalIgnoreCase))
+                    var columnName = reader["name"]?.ToString();
+                    if (string.Equals(columnName, "LinkedMode", StringComparison.OrdinalIgnoreCase))
                     {
                         linkedModeColumnCount++;
+                    }
+                    if (string.Equals(columnName, "ControlMode", StringComparison.OrdinalIgnoreCase))
+                    {
+                        controlModeColumnCount++;
                     }
                 }
 
                 linkedModeColumnCount.Should().Be(1);
+                controlModeColumnCount.Should().Be(1);
             }
+        }
+        finally
+        {
+        }
+    }
+
+    [Fact]
+    public void UpgradeLegacySchema_ShouldMapLegacyLinkedModeToControlMode()
+    {
+        var dbPath = Path.Combine(Path.GetTempPath(), $"thermalguardhat-upgrader-{Guid.NewGuid():N}.db");
+        var connectionString = $"Data Source={dbPath}";
+
+        try
+        {
+            using (var connection = new SqliteConnection(connectionString))
+            {
+                connection.Open();
+                using var command = connection.CreateCommand();
+                command.CommandText = """
+                    CREATE TABLE GlobalSettings (
+                        Id TEXT PRIMARY KEY,
+                        Auto INTEGER NOT NULL,
+                        LinkedMode INTEGER NOT NULL DEFAULT 1
+                    );
+
+                    INSERT INTO GlobalSettings (Id, Auto, LinkedMode) VALUES ('a', 1, 1);
+                    INSERT INTO GlobalSettings (Id, Auto, LinkedMode) VALUES ('b', 1, 0);
+                    """;
+                command.ExecuteNonQuery();
+            }
+
+            SqliteSchemaUpgrader.UpgradeLegacySchema(connectionString);
+
+            using var verificationConnection = new SqliteConnection(connectionString);
+            verificationConnection.Open();
+            using var verificationCommand = verificationConnection.CreateCommand();
+            verificationCommand.CommandText = "SELECT Id, ControlMode FROM GlobalSettings ORDER BY Id;";
+
+            using var reader = verificationCommand.ExecuteReader();
+            var values = new List<(string Id, string ControlMode)>();
+            while (reader.Read())
+            {
+                values.Add((reader["Id"]?.ToString() ?? string.Empty, reader["ControlMode"]?.ToString() ?? string.Empty));
+            }
+
+            values.Should().ContainInOrder(
+                ("a", "linked_fans"),
+                ("b", "independent"));
         }
         finally
         {

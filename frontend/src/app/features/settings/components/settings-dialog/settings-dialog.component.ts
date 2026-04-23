@@ -9,6 +9,10 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { ConfigService } from '../../../../core/services/config.service';
 
+type ControlMode = 'linked_fans' | 'independent' | 'differential';
+type LinkedSensor = 'sensor1' | 'sensor2';
+type DifferentialMode = 'sensor1_minus_sensor2' | 'sensor2_minus_sensor1';
+
 @Component({
   selector: 'app-settings-dialog',
   standalone: true,
@@ -17,7 +21,9 @@ import { ConfigService } from '../../../../core/services/config.service';
   styleUrl: './settings-dialog.component.css',
 })
 export class SettingsDialogComponent implements OnInit {
-  linkedMode = true;
+  controlMode: ControlMode = 'linked_fans';
+  linkedSensor: LinkedSensor = 'sensor1';
+  differentialMode: DifferentialMode = 'sensor1_minus_sensor2';
   loading = true;
   saving = false;
   saveError = '';
@@ -32,6 +38,9 @@ export class SettingsDialogComponent implements OnInit {
 
   rules: TemperatureRule[] = [];
   originalRules: TemperatureRule[] = [];
+  private originalControlMode: ControlMode = 'linked_fans';
+  private originalLinkedSensor: LinkedSensor = 'sensor1';
+  private originalDifferentialMode: DifferentialMode = 'sensor1_minus_sensor2';
   private settingsRow: SettingsRow | null = null;
 
   private readonly http = inject(HttpClient);
@@ -45,17 +54,71 @@ export class SettingsDialogComponent implements OnInit {
     return this.display.temperatureUnit === 'F' ? 212 : 100;
   }
 
+  get isLinkedFansMode(): boolean {
+    return this.controlMode === 'linked_fans';
+  }
+
+  get isIndependentMode(): boolean {
+    return this.controlMode === 'independent';
+  }
+
+  get isDifferentialMode(): boolean {
+    return this.controlMode === 'differential';
+  }
+
+  get selectedLinkedSensorName(): string {
+    return this.linkedSensor === 'sensor2' ? this.display.sensor2Name : this.display.sensor1Name;
+  }
+
+  get differentialExpression(): string {
+    return this.differentialMode === 'sensor2_minus_sensor1'
+      ? `${this.display.sensor2Name} - ${this.display.sensor1Name}`
+      : `${this.display.sensor1Name} - ${this.display.sensor2Name}`;
+  }
+
+  get modeHelpIcon(): string {
+    switch (this.controlMode) {
+      case 'independent':
+        return 'tune';
+      case 'differential':
+        return 'compare_arrows';
+      default:
+        return 'hub';
+    }
+  }
+
+  get modeHelpText(): string {
+    switch (this.controlMode) {
+      case 'independent':
+        return 'Each sensor drives its matching fan with its own thresholds and fan outputs.';
+      case 'differential':
+        return `Both fans follow one shared curve driven by the temperature delta ${this.differentialExpression}.`;
+      default:
+        return `Both fans follow one shared curve driven by ${this.selectedLinkedSensorName}.`;
+    }
+  }
+
   addRule(): void {
-    const threshold = this.rules.length > 0 ? this.rules[this.rules.length - 1].threshold + 5 : 25;
+    const threshold = this.nextThreshold();
+    const sharedValue = this.isDifferentialMode ? 25 : 30;
+
     this.rules = [
       ...this.rules,
-      {
-        threshold,
-        minTemp1: threshold,
-        minTemp2: threshold,
-        value1: this.linkedMode ? 30 : 15,
-        value2: this.linkedMode ? 30 : 15,
-      },
+      this.isIndependentMode
+        ? {
+            threshold,
+            minTemp1: threshold,
+            minTemp2: threshold,
+            value1: 15,
+            value2: 15,
+          }
+        : {
+            threshold,
+            minTemp1: threshold,
+            minTemp2: threshold,
+            value1: sharedValue,
+            value2: sharedValue,
+          },
     ];
   }
 
@@ -63,20 +126,15 @@ export class SettingsDialogComponent implements OnInit {
     this.rules = this.rules.filter((_, currentIndex) => currentIndex !== index);
   }
 
-  onModeChanged(value: 'linked' | 'independent'): void {
-    this.linkedMode = value === 'linked';
-    this.rules = this.rules.map((rule) => {
-      const threshold = rule.threshold ?? rule.minTemp1 ?? rule.minTemp2 ?? 25;
-      return {
-        ...rule,
-        threshold,
-        minTemp1: this.linkedMode ? threshold : rule.minTemp1 ?? threshold,
-        minTemp2: this.linkedMode ? threshold : rule.minTemp2 ?? threshold,
-      };
-    });
+  onModeChanged(value: ControlMode): void {
+    this.controlMode = value;
+    this.rules = this.rules.map((rule) => this.rebaseRuleForMode(rule, value));
   }
 
   reset(): void {
+    this.controlMode = this.originalControlMode;
+    this.linkedSensor = this.originalLinkedSensor;
+    this.differentialMode = this.originalDifferentialMode;
     this.rules = this.originalRules.map((rule) => ({ ...rule }));
     this.saveError = '';
     this.saveSuccess = '';
@@ -89,12 +147,22 @@ export class SettingsDialogComponent implements OnInit {
 
     const payload = this.rules
       .map((rule) => this.toCondition(rule))
-      .sort((a, b) => Number(a.MinTemp1 ?? 0) - Number(b.MinTemp1 ?? 0));
+      .sort((a, b) => {
+        const first = Number(a.MinTemp1 ?? 0) - Number(b.MinTemp1 ?? 0);
+        if (first !== 0) {
+          return first;
+        }
+
+        return Number(a.MinTemp2 ?? 0) - Number(b.MinTemp2 ?? 0);
+      });
 
     const settingsPayload = this.settingsRow
       ? {
           Auto: this.settingsRow.Auto,
-          LinkedMode: this.linkedMode,
+          LinkedMode: this.controlMode !== 'independent',
+          ControlMode: this.controlMode,
+          LinkedSensor: this.linkedSensor,
+          DifferentialMode: this.differentialMode,
           Fan1Pwr: this.settingsRow.Fan1Pwr,
           Fan2Pwr: this.settingsRow.Fan2Pwr,
           Beep: this.settingsRow.Beep,
@@ -156,42 +224,32 @@ export class SettingsDialogComponent implements OnInit {
     this.http.get<ApiListResponse<SettingsRow>>(`${this.apiBaseUrl}/settings`).subscribe({
       next: (settingsResponse) => {
         this.settingsRow = settingsResponse?.Data?.[0] ?? null;
-        this.linkedMode = this.settingsRow?.LinkedMode ?? true;
+        this.controlMode = this.normalizeControlMode(this.settingsRow);
+        this.linkedSensor = this.normalizeLinkedSensor(this.settingsRow);
+        this.differentialMode = this.normalizeDifferentialMode(this.settingsRow);
 
         this.http.get<ApiListResponse<ConditionDto>>(`${this.apiBaseUrl}/conditions`).subscribe({
           next: (conditionsResponse) => {
             const conditions = conditionsResponse?.Data ?? [];
             this.rules = conditions.length > 0
-              ? conditions
-                .map((item) => this.toRule(item))
-                .sort((left, right) => {
-                  const first = this.linkedMode
-                    ? left.threshold - right.threshold
-                    : left.minTemp1 - right.minTemp1;
-
-                  if (first !== 0) {
-                    return first;
-                  }
-
-                  return this.linkedMode
-                    ? 0
-                    : left.minTemp2 - right.minTemp2;
-                })
+              ? this.sortRules(conditions.map((item) => this.toRule(item)))
               : this.defaultRules();
-            this.originalRules = this.rules.map((rule) => ({ ...rule }));
+            this.captureOriginalState();
             this.loading = false;
           },
           error: () => {
             this.rules = this.defaultRules();
-            this.originalRules = this.rules.map((rule) => ({ ...rule }));
+            this.captureOriginalState();
             this.loading = false;
           },
         });
       },
       error: () => {
-        this.linkedMode = true;
+        this.controlMode = 'linked_fans';
+        this.linkedSensor = 'sensor1';
+        this.differentialMode = 'sensor1_minus_sensor2';
         this.rules = this.defaultRules();
-        this.originalRules = this.rules.map((rule) => ({ ...rule }));
+        this.captureOriginalState();
         this.loading = false;
       },
     });
@@ -200,39 +258,83 @@ export class SettingsDialogComponent implements OnInit {
   private finishSave(): void {
     this.saving = false;
     this.saveSuccess = 'Rules saved.';
+    this.captureOriginalState();
+  }
+
+  private captureOriginalState(): void {
+    this.originalControlMode = this.controlMode;
+    this.originalLinkedSensor = this.linkedSensor;
+    this.originalDifferentialMode = this.differentialMode;
     this.originalRules = this.rules.map((rule) => ({ ...rule }));
   }
 
+  private normalizeControlMode(settingsRow: SettingsRow | null): ControlMode {
+    switch (settingsRow?.ControlMode) {
+      case 'independent':
+      case 'differential':
+      case 'linked_fans':
+        return settingsRow.ControlMode;
+      default:
+        return settingsRow?.LinkedMode === false ? 'independent' : 'linked_fans';
+    }
+  }
+
+  private normalizeLinkedSensor(settingsRow: SettingsRow | null): LinkedSensor {
+    return settingsRow?.LinkedSensor === 'sensor2' ? 'sensor2' : 'sensor1';
+  }
+
+  private normalizeDifferentialMode(settingsRow: SettingsRow | null): DifferentialMode {
+    return settingsRow?.DifferentialMode === 'sensor2_minus_sensor1'
+      ? 'sensor2_minus_sensor1'
+      : 'sensor1_minus_sensor2';
+  }
+
   private toRule(item: ConditionDto): TemperatureRule {
-    const threshold = this.fromCelsius(Number(item.MinTemp1 ?? item.MinTemp2 ?? 25));
+    const minTemp1 = this.fromCelsius(Number(item.MinTemp1 ?? item.MinTemp2 ?? 25));
+    const minTemp2 = this.fromCelsius(Number(item.MinTemp2 ?? item.MinTemp1 ?? 25));
+
     return {
-      threshold,
-      minTemp1: this.fromCelsius(Number(item.MinTemp1 ?? item.MinTemp2 ?? 25)),
-      minTemp2: this.fromCelsius(Number(item.MinTemp2 ?? item.MinTemp1 ?? 25)),
+      threshold: this.ruleThresholdFromValues(minTemp1, minTemp2),
+      minTemp1,
+      minTemp2,
       value1: Number(item.Value1 ?? 0),
       value2: Number(item.Value2 ?? 0),
     };
   }
 
   private toCondition(rule: TemperatureRule): ConditionDto {
-    if (this.linkedMode) {
+    if (this.isIndependentMode) {
       return {
-        MinTemp1: this.toCelsius(rule.threshold),
-        MinTemp2: this.toCelsius(rule.threshold),
+        MinTemp1: this.toCelsius(rule.minTemp1),
+        MinTemp2: this.toCelsius(rule.minTemp2),
         Value1: Math.round(rule.value1),
         Value2: Math.round(rule.value2),
       };
     }
 
+    const threshold = this.toCelsius(rule.threshold);
+    const value = Math.round(rule.value1);
+
     return {
-      MinTemp1: this.toCelsius(rule.minTemp1),
-      MinTemp2: this.toCelsius(rule.minTemp2),
-      Value1: Math.round(rule.value1),
-      Value2: Math.round(rule.value2),
+      MinTemp1: threshold,
+      MinTemp2: threshold,
+      Value1: value,
+      Value2: value,
     };
   }
 
   private defaultRules(): TemperatureRule[] {
+    if (this.isDifferentialMode) {
+      return [
+        { threshold: 2, minTemp1: 2, minTemp2: 2, value1: 20, value2: 20 },
+        { threshold: 4, minTemp1: 4, minTemp2: 4, value1: 30, value2: 30 },
+        { threshold: 6, minTemp1: 6, minTemp2: 6, value1: 45, value2: 45 },
+        { threshold: 8, minTemp1: 8, minTemp2: 8, value1: 60, value2: 60 },
+        { threshold: 10, minTemp1: 10, minTemp2: 10, value1: 75, value2: 75 },
+        { threshold: 12, minTemp1: 12, minTemp2: 12, value1: 90, value2: 90 },
+      ];
+    }
+
     return [
       { threshold: 25, minTemp1: 25, minTemp2: 25, value1: 15, value2: 15 },
       { threshold: 27, minTemp1: 27, minTemp2: 27, value1: 20, value2: 20 },
@@ -246,6 +348,90 @@ export class SettingsDialogComponent implements OnInit {
       { threshold: 43, minTemp1: 43, minTemp2: 43, value1: 92, value2: 92 },
       { threshold: 45, minTemp1: 45, minTemp2: 45, value1: 100, value2: 100 },
     ];
+  }
+
+  private sortRules(rules: TemperatureRule[]): TemperatureRule[] {
+    return [...rules].sort((left, right) => {
+      if (this.isIndependentMode) {
+        const first = left.minTemp1 - right.minTemp1;
+        if (first !== 0) {
+          return first;
+        }
+
+        return left.minTemp2 - right.minTemp2;
+      }
+
+      return left.threshold - right.threshold;
+    });
+  }
+
+  private nextThreshold(): number {
+    if (this.rules.length === 0) {
+      return this.isDifferentialMode ? 2 : 25;
+    }
+
+    const lastRule = this.rules[this.rules.length - 1];
+    if (this.isIndependentMode) {
+      return Math.max(lastRule.minTemp1, lastRule.minTemp2) + 5;
+    }
+
+    return lastRule.threshold + (this.isDifferentialMode ? 2 : 5);
+  }
+
+  private rebaseRuleForMode(rule: TemperatureRule, nextMode: ControlMode): TemperatureRule {
+    if (nextMode === 'independent') {
+      const threshold = rule.threshold ?? rule.minTemp1 ?? rule.minTemp2 ?? 25;
+      return {
+        ...rule,
+        threshold,
+        minTemp1: rule.minTemp1 ?? threshold,
+        minTemp2: rule.minTemp2 ?? threshold,
+      };
+    }
+
+    const threshold = nextMode === 'differential'
+      ? this.differentialThresholdFromRule(rule)
+      : this.linkedThresholdFromRule(rule);
+    const sharedValue = Math.max(rule.value1, rule.value2);
+
+    return {
+      threshold,
+      minTemp1: threshold,
+      minTemp2: threshold,
+      value1: sharedValue,
+      value2: sharedValue,
+    };
+  }
+
+  private linkedThresholdFromRule(rule: TemperatureRule): number {
+    if (this.linkedSensor === 'sensor2') {
+      return rule.minTemp2 ?? rule.threshold ?? 25;
+    }
+
+    return rule.minTemp1 ?? rule.threshold ?? 25;
+  }
+
+  private differentialThresholdFromRule(rule: TemperatureRule): number {
+    if (typeof rule.threshold === 'number' && Number.isFinite(rule.threshold)) {
+      return rule.threshold;
+    }
+
+    const first = rule.minTemp1 ?? 0;
+    const second = rule.minTemp2 ?? 0;
+    const delta = this.differentialMode === 'sensor2_minus_sensor1' ? second - first : first - second;
+    return Math.max(delta, 0);
+  }
+
+  private ruleThresholdFromValues(minTemp1: number, minTemp2: number): number {
+    if (this.isDifferentialMode) {
+      return minTemp1;
+    }
+
+    if (this.isLinkedFansMode && this.linkedSensor === 'sensor2') {
+      return minTemp2;
+    }
+
+    return minTemp1;
   }
 
   private rebaseRulesForTemperatureUnit(previousUnit: string, nextUnit: string): void {
@@ -310,6 +496,9 @@ interface ConfigResponse {
 interface SettingsRow {
   Auto: boolean;
   LinkedMode?: boolean;
+  ControlMode?: ControlMode;
+  LinkedSensor?: LinkedSensor;
+  DifferentialMode?: DifferentialMode;
   Fan1Pwr: number;
   Fan2Pwr: number;
   Beep: boolean;

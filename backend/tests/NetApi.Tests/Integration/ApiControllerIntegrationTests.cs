@@ -40,6 +40,9 @@ public class ApiControllerIntegrationTests : IntegrationTestBase
         {
             Auto = false,
             LinkedMode = false,
+            ControlMode = "independent",
+            LinkedSensor = "sensor1",
+            DifferentialMode = "sensor1_minus_sensor2",
             Fan1Pwr = 25,
             Fan2Pwr = 35,
             Beep = false,

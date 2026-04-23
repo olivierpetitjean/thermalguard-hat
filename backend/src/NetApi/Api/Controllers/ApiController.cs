@@ -43,6 +43,9 @@ public class ApiController : ControllerBase
     {
         public bool Auto { get; set; }
         public bool LinkedMode { get; set; }
+        public string? ControlMode { get; set; }
+        public string? LinkedSensor { get; set; }
+        public string? DifferentialMode { get; set; }
         public int Fan1Pwr { get; set; }
         public int Fan2Pwr { get; set; }
         public bool Beep { get; set; }
@@ -165,6 +168,9 @@ public class ApiController : ControllerBase
             {
                 Auto = settings.Auto,
                 LinkedMode = settings.LinkedMode,
+                ControlMode = settings.ControlMode,
+                LinkedSensor = settings.LinkedSensor,
+                DifferentialMode = settings.DifferentialMode,
                 Fan1Pwr = settings.Fan1Pwr,
                 Fan2Pwr = settings.Fan2Pwr,
                 Beep = settings.Beep,

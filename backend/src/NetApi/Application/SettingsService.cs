@@ -21,9 +21,16 @@ public class SettingsService(AppDbContext db)
             return false;
         }
 
+        var controlMode = NormalizeControlMode(settings.ControlMode, settings.LinkedMode);
+        var linkedSensor = NormalizeLinkedSensor(settings.LinkedSensor);
+        var differentialMode = NormalizeDifferentialMode(settings.DifferentialMode);
+
         current.LastUpdated = DateTime.Now;
         current.Auto = settings.Auto;
-        current.LinkedMode = settings.LinkedMode;
+        current.LinkedMode = controlMode != "independent";
+        current.ControlMode = controlMode;
+        current.LinkedSensor = linkedSensor;
+        current.DifferentialMode = differentialMode;
         current.Fan1Pwr = settings.Fan1Pwr;
         current.Fan2Pwr = settings.Fan2Pwr;
         current.Beep = settings.Beep;
@@ -37,5 +44,34 @@ public class SettingsService(AppDbContext db)
 
         db.SaveChanges();
         return true;
+    }
+
+    private static string NormalizeControlMode(string? controlMode, bool linkedMode)
+    {
+        return controlMode?.Trim().ToLowerInvariant() switch
+        {
+            "linked_fans" => "linked_fans",
+            "independent" => "independent",
+            "differential" => "differential",
+            _ => linkedMode ? "linked_fans" : "independent"
+        };
+    }
+
+    private static string NormalizeLinkedSensor(string? linkedSensor)
+    {
+        return linkedSensor?.Trim().ToLowerInvariant() switch
+        {
+            "sensor2" => "sensor2",
+            _ => "sensor1"
+        };
+    }
+
+    private static string NormalizeDifferentialMode(string? differentialMode)
+    {
+        return differentialMode?.Trim().ToLowerInvariant() switch
+        {
+            "sensor2_minus_sensor1" => "sensor2_minus_sensor1",
+            _ => "sensor1_minus_sensor2"
+        };
     }
 }

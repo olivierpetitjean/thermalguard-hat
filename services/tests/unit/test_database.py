@@ -24,6 +24,9 @@ def create_database(tmp_path):
             Id TEXT PRIMARY KEY,
             Auto INTEGER NOT NULL,
             LinkedMode INTEGER NOT NULL,
+            ControlMode TEXT NOT NULL,
+            LinkedSensor TEXT NOT NULL,
+            DifferentialMode TEXT NOT NULL,
             Fan1Pwr INTEGER NOT NULL,
             Fan2Pwr INTEGER NOT NULL,
             Beep INTEGER NOT NULL,
@@ -47,8 +50,12 @@ def create_database(tmp_path):
     )
 
     database._conn.execute(
-        "INSERT INTO GlobalSettings (Id, Auto, LinkedMode, Fan1Pwr, Fan2Pwr, Beep, LastUpdated) VALUES (?, ?, ?, ?, ?, ?, ?)",
-        ("settings", 1, 1, 15, 15, 1, "2026-01-01T00:00:00"),
+        """
+        INSERT INTO GlobalSettings (
+            Id, Auto, LinkedMode, ControlMode, LinkedSensor, DifferentialMode, Fan1Pwr, Fan2Pwr, Beep, LastUpdated
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        """,
+        ("settings", 1, 1, "linked_fans", "sensor1", "sensor1_minus_sensor2", 15, 15, 1, "2026-01-01T00:00:00"),
     )
     database._conn.execute(
         "INSERT INTO MaxReferences (Id, Date, Value1, Value2) VALUES (?, ?, ?, ?)",

@@ -20,19 +20,54 @@ public static class SqliteSchemaUpgrader
             columnName: "LinkedMode",
             alterStatement: "ALTER TABLE GlobalSettings ADD COLUMN LinkedMode INTEGER NOT NULL DEFAULT 1;"
         );
+
+        var controlModeAdded = EnsureColumn(
+            connection,
+            tableName: "GlobalSettings",
+            columnName: "ControlMode",
+            alterStatement: "ALTER TABLE GlobalSettings ADD COLUMN ControlMode TEXT NOT NULL DEFAULT 'linked_fans';"
+        );
+
+        EnsureColumn(
+            connection,
+            tableName: "GlobalSettings",
+            columnName: "LinkedSensor",
+            alterStatement: "ALTER TABLE GlobalSettings ADD COLUMN LinkedSensor TEXT NOT NULL DEFAULT 'sensor1';"
+        );
+
+        EnsureColumn(
+            connection,
+            tableName: "GlobalSettings",
+            columnName: "DifferentialMode",
+            alterStatement: "ALTER TABLE GlobalSettings ADD COLUMN DifferentialMode TEXT NOT NULL DEFAULT 'sensor1_minus_sensor2';"
+        );
+
+        if (controlModeAdded)
+        {
+            using var command = connection.CreateCommand();
+            command.CommandText = """
+                UPDATE GlobalSettings
+                SET ControlMode = CASE
+                    WHEN IFNULL(LinkedMode, 1) = 1 THEN 'linked_fans'
+                    ELSE 'independent'
+                END;
+                """;
+            command.ExecuteNonQuery();
+        }
     }
 
-    private static void EnsureColumn(SqliteConnection connection, string tableName, string columnName, string alterStatement)
+    private static bool EnsureColumn(SqliteConnection connection, string tableName, string columnName, string alterStatement)
     {
         if (ColumnExists(connection, tableName, columnName))
         {
-            return;
+            return false;
         }
 
         Console.WriteLine($"Applying schema upgrade: {tableName}.{columnName}");
         using var command = connection.CreateCommand();
         command.CommandText = alterStatement;
         command.ExecuteNonQuery();
+        return true;
     }
 
     private static bool TableExists(SqliteConnection connection, string tableName)

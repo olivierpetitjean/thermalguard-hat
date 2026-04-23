@@ -141,6 +141,24 @@ def test_get_fans_power_reference_should_use_descending_first_match_in_linked_mo
     assert result == {"Value1": 60, "Value2": 60}
 
 
+def test_get_fans_power_reference_should_use_selected_sensor_in_linked_fans_mode():
+    conditions = [
+        {"MinTemp1": 40, "MinTemp2": 40, "Value1": 90, "Value2": 90},
+        {"MinTemp1": 30, "MinTemp2": 30, "Value1": 60, "Value2": 60},
+        {"MinTemp1": 20, "MinTemp2": 20, "Value1": 30, "Value2": 30},
+    ]
+
+    result = utils.get_fans_power_reference(
+        45,
+        35,
+        conditions,
+        control_mode=utils.CONTROL_MODE_LINKED_FANS,
+        linked_sensor=utils.LINKED_SENSOR_2,
+    )
+
+    assert result == {"Value1": 60, "Value2": 60}
+
+
 def test_get_fans_power_reference_should_evaluate_each_sensor_independently_when_unlinked():
     conditions = [
         {"MinTemp1": 40, "MinTemp2": 40, "Value1": 90, "Value2": 90},
@@ -151,6 +169,24 @@ def test_get_fans_power_reference_should_evaluate_each_sensor_independently_when
     result = utils.get_fans_power_reference(35, 45, conditions, linked_mode=False)
 
     assert result == {"Value1": 60, "Value2": 90}
+
+
+def test_get_fans_power_reference_should_use_sensor_delta_in_differential_mode():
+    conditions = [
+        {"MinTemp1": 10, "MinTemp2": 10, "Value1": 90, "Value2": 90},
+        {"MinTemp1": 6, "MinTemp2": 6, "Value1": 60, "Value2": 60},
+        {"MinTemp1": 2, "MinTemp2": 2, "Value1": 30, "Value2": 30},
+    ]
+
+    result = utils.get_fans_power_reference(
+        35,
+        28,
+        conditions,
+        control_mode=utils.CONTROL_MODE_DIFFERENTIAL,
+        differential_mode=utils.DIFFERENTIAL_SENSOR1_MINUS_SENSOR2,
+    )
+
+    assert result == {"Value1": 60, "Value2": 60}
 
 
 def test_get_ip_address_should_fallback_to_preferred_interfaces_when_socket_fails(monkeypatch):

@@ -191,13 +191,23 @@ def test_init_should_load_global_state_connect_mqtt_and_publish_maxrefs(monkeypa
     service, gpio, _sensors, _display, db, mqtt = create_service(monkeypatch)
 
     service.init(
-        {"Auto": True, "LinkedMode": False, "Fan1Pwr": 25, "Fan2Pwr": 35, "Beep": False},
+        {
+            "Auto": True,
+            "LinkedMode": False,
+            "ControlMode": "independent",
+            "LinkedSensor": "sensor1",
+            "DifferentialMode": "sensor1_minus_sensor2",
+            "Fan1Pwr": 25,
+            "Fan2Pwr": 35,
+            "Beep": False,
+        },
         [{"MinTemp1": 30, "MinTemp2": 30, "Value1": 60, "Value2": 60}],
         "192.168.1.50",
         "AA:BB:CC:DD:EE:FF",
     )
 
     assert service._auto is True
+    assert service._control_mode == "independent"
     assert service._linked_mode is False
     assert service._force_fp1 == 25
     assert service._force_fp2 == 35
@@ -280,11 +290,51 @@ def test_update_temp_should_apply_manual_power_when_auto_is_disabled(monkeypatch
 def test_update_temp_should_compute_auto_power_from_conditions(monkeypatch):
     service, gpio, _sensors, _display, _db, _mqtt = create_service(monkeypatch, sensor1=35, sensor2=20)
     service._auto = True
+    service._control_mode = "linked_fans"
     service._linked_mode = True
     service._conditions = [
         {"MinTemp1": 40, "MinTemp2": 40, "Value1": 90, "Value2": 90},
         {"MinTemp1": 30, "MinTemp2": 30, "Value1": 60, "Value2": 60},
         {"MinTemp1": 20, "MinTemp2": 20, "Value1": 30, "Value2": 30},
+    ]
+
+    service.update_temp()
+
+    assert service._fp1 == 60
+    assert service._fp2 == 60
+    assert gpio.fan1_power_calls[-1] == 60
+    assert gpio.fan2_power_calls[-1] == 60
+
+
+def test_update_temp_should_compute_linked_fans_from_selected_sensor(monkeypatch):
+    service, gpio, _sensors, _display, _db, _mqtt = create_service(monkeypatch, sensor1=45, sensor2=35)
+    service._auto = True
+    service._control_mode = "linked_fans"
+    service._linked_mode = True
+    service._linked_sensor = "sensor2"
+    service._conditions = [
+        {"MinTemp1": 40, "MinTemp2": 40, "Value1": 90, "Value2": 90},
+        {"MinTemp1": 30, "MinTemp2": 30, "Value1": 60, "Value2": 60},
+    ]
+
+    service.update_temp()
+
+    assert service._fp1 == 60
+    assert service._fp2 == 60
+    assert gpio.fan1_power_calls[-1] == 60
+    assert gpio.fan2_power_calls[-1] == 60
+
+
+def test_update_temp_should_compute_differential_mode(monkeypatch):
+    service, gpio, _sensors, _display, _db, _mqtt = create_service(monkeypatch, sensor1=35, sensor2=28)
+    service._auto = True
+    service._control_mode = "differential"
+    service._linked_mode = True
+    service._differential_mode = "sensor1_minus_sensor2"
+    service._conditions = [
+        {"MinTemp1": 10, "MinTemp2": 10, "Value1": 90, "Value2": 90},
+        {"MinTemp1": 6, "MinTemp2": 6, "Value1": 60, "Value2": 60},
+        {"MinTemp1": 2, "MinTemp2": 2, "Value1": 30, "Value2": 30},
     ]
 
     service.update_temp()

@@ -26,6 +26,16 @@ _LOG_LEVELS = {
 _LOGGER = logging.getLogger("thermalguard-hat.sensor")
 debug_level = Verbose.INFO
 
+CONTROL_MODE_LINKED_FANS = "linked_fans"
+CONTROL_MODE_INDEPENDENT = "independent"
+CONTROL_MODE_DIFFERENTIAL = "differential"
+
+LINKED_SENSOR_1 = "sensor1"
+LINKED_SENSOR_2 = "sensor2"
+
+DIFFERENTIAL_SENSOR1_MINUS_SENSOR2 = "sensor1_minus_sensor2"
+DIFFERENTIAL_SENSOR2_MINUS_SENSOR1 = "sensor2_minus_sensor1"
+
 
 def setup_logging(level_name):
     global debug_level
@@ -213,10 +223,22 @@ def _condition_value(condition, key, index):
         return condition[index]
 
 
-def get_fans_power_reference(temp1, temp2, conditions, linked_mode=True):
+def get_fans_power_reference(
+    temp1,
+    temp2,
+    conditions,
+    linked_mode=True,
+    control_mode=None,
+    linked_sensor=LINKED_SENSOR_1,
+    differential_mode=DIFFERENTIAL_SENSOR1_MINUS_SENSOR2,
+):
     result = {'Value1': 0, 'Value2': 0}
 
-    if not linked_mode:
+    normalized_control_mode = control_mode or (
+        CONTROL_MODE_LINKED_FANS if linked_mode else CONTROL_MODE_INDEPENDENT
+    )
+
+    if normalized_control_mode == CONTROL_MODE_INDEPENDENT:
         for condition in conditions:
             min_temp1 = _condition_value(condition, 'MinTemp1', 1)
             value1 = _condition_value(condition, 'Value1', 3)
@@ -233,27 +255,42 @@ def get_fans_power_reference(temp1, temp2, conditions, linked_mode=True):
 
         return result
 
+    if normalized_control_mode == CONTROL_MODE_DIFFERENTIAL:
+        if temp1 is None or temp2 is None:
+            return result
+
+        if differential_mode == DIFFERENTIAL_SENSOR2_MINUS_SENSOR1:
+            differential_temp = temp2 - temp1
+        else:
+            differential_temp = temp1 - temp2
+
+        for condition in conditions:
+            threshold = _condition_value(condition, 'MinTemp1', 1)
+            value1 = _condition_value(condition, 'Value1', 3)
+            value2 = _condition_value(condition, 'Value2', 4)
+
+            if differential_temp > threshold:
+                result['Value1'] = value1
+                result['Value2'] = value2
+                break
+
+        return result
+
+    selected_sensor = LINKED_SENSOR_2 if linked_sensor == LINKED_SENSOR_2 else LINKED_SENSOR_1
     for condition in conditions:
-        min_temp1 = _condition_value(condition, 'MinTemp1', 1)
-        min_temp2 = _condition_value(condition, 'MinTemp2', 2)
+        threshold = _condition_value(
+            condition,
+            'MinTemp2' if selected_sensor == LINKED_SENSOR_2 else 'MinTemp1',
+            2 if selected_sensor == LINKED_SENSOR_2 else 1,
+        )
         value1 = _condition_value(condition, 'Value1', 3)
         value2 = _condition_value(condition, 'Value2', 4)
 
-        if temp1 is None:
-            if temp2 > min_temp2:
-                result['Value1'] = value1
-                result['Value2'] = value2
-                break
-        elif temp2 is None:
-            if temp1 > min_temp1:
-                result['Value1'] = value1
-                result['Value2'] = value2
-                break
-        else:
-            if temp1 > min_temp1 or temp2 > min_temp2:
-                result['Value1'] = value1
-                result['Value2'] = value2
-                break
+        trigger_temp = temp2 if selected_sensor == LINKED_SENSOR_2 else temp1
+        if trigger_temp is not None and trigger_temp > threshold:
+            result['Value1'] = value1
+            result['Value2'] = value2
+            break
     return result
 
 

@@ -45,6 +45,7 @@ public class SettingsServiceTests
                 Fan1Pwr = 42,
                 Fan2Pwr = 64,
                 Beep = false,
+                DisableFanAlerts = true,
                 SmtpEnable = true,
                 Smtp_host = "smtp.example.test",
                 SmtpPort = "2525",
@@ -67,6 +68,7 @@ public class SettingsServiceTests
         settings.Fan1Pwr.Should().Be(42);
         settings.Fan2Pwr.Should().Be(64);
         settings.Beep.Should().BeFalse();
+        settings.DisableFanAlerts.Should().BeTrue();
         settings.SmtpEnable.Should().BeTrue();
         settings.Smtp_host.Should().Be("smtp.example.test");
         settings.SmtpPort.Should().Be("2525");

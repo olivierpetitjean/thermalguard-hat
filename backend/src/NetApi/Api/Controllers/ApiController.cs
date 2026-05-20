@@ -49,6 +49,7 @@ public class ApiController : ControllerBase
         public int Fan1Pwr { get; set; }
         public int Fan2Pwr { get; set; }
         public bool Beep { get; set; }
+        public bool DisableFanAlerts { get; set; }
         public bool SmtpEnable { get; set; }
         public string? Smtp_host { get; set; }
         public string? SmtpPort { get; set; }
@@ -174,6 +175,7 @@ public class ApiController : ControllerBase
                 Fan1Pwr = settings.Fan1Pwr,
                 Fan2Pwr = settings.Fan2Pwr,
                 Beep = settings.Beep,
+                DisableFanAlerts = settings.DisableFanAlerts,
                 SmtpEnable = settings.SmtpEnable,
                 Smtp_host = settings.Smtp_host,
                 SmtpPort = settings.SmtpPort,

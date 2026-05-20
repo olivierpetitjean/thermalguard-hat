@@ -12,10 +12,12 @@ import ipaddress
 import json
 import os
 import secrets
+import sqlite3
 import string
 import subprocess
 import sys
 import socket
+from datetime import datetime
 
 # ---------------------------------------------------------------------------
 # Helpers
@@ -436,6 +438,15 @@ def configure_display(shared_settings):
     display['Fan1MaxAirflow'] = ask_float("Fan 1 max airflow", default=display.get('Fan1MaxAirflow', 95), min_val=1, max_val=10000)
     display['Fan2MaxAirflow'] = ask_float("Fan 2 max airflow", default=display.get('Fan2MaxAirflow', 95), min_val=1, max_val=10000)
 
+def configure_alerts(shared_settings):
+    section("Alerts")
+
+    defaults = shared_settings.setdefault("GlobalSettingsDefaults", {})
+    defaults["DisableFanAlerts"] = ask_bool(
+        "Disable fan disconnect alerts?",
+        default=defaults.get("DisableFanAlerts", False),
+    )
+
 def configure_kiosk_setup(shared_settings):
     section("Kiosk Mode")
 
@@ -477,6 +488,13 @@ def get_install_root(sensor_dir, api_dir):
 def get_shared_config_path(sensor_dir, api_dir):
     install_root = get_install_root(sensor_dir, api_dir)
     return os.path.join(install_root, "config", "settings.json")
+
+
+def get_global_settings_db_path(shared_settings, install_root):
+    connection_strings = shared_settings.get("ConnectionStrings", {})
+    db_connection = connection_strings.get("WebApiDatabase", "")
+    default_path = os.path.join(install_root, "api", "db", "LocalDatabase.db")
+    return connection_string_to_db_path(db_connection, default_path)
 
 
 def build_default_shared_settings(install_root):
@@ -526,6 +544,9 @@ def build_default_shared_settings(install_root):
             "AirflowUnit": "m3h",
             "Fan1MaxAirflow": 95.0,
             "Fan2MaxAirflow": 95.0,
+        },
+        "GlobalSettingsDefaults": {
+            "DisableFanAlerts": False,
         },
         "Python": {
             "Debug": "INFO",
@@ -719,6 +740,54 @@ def load_shared_settings(config_path):
             return json.load(f)
     return None
 
+
+def _sqlite_table_exists(connection, table_name):
+    cursor = connection.execute(
+        "SELECT COUNT(*) FROM sqlite_master WHERE type = 'table' AND name = ?",
+        (table_name,),
+    )
+    return cursor.fetchone()[0] > 0
+
+
+def _sqlite_column_exists(connection, table_name, column_name):
+    cursor = connection.execute(f"PRAGMA table_info('{table_name}')")
+    return any(str(row[1]).lower() == column_name.lower() for row in cursor.fetchall())
+
+
+def apply_global_settings_defaults(shared_settings, install_root):
+    defaults = shared_settings.get("GlobalSettingsDefaults", {})
+    db_path = get_global_settings_db_path(shared_settings, install_root)
+
+    if not os.path.exists(db_path):
+        warn(f"Database not found yet at {db_path}. Runtime alert preferences will be applied after the API starts.")
+        return False
+
+    connection = sqlite3.connect(db_path)
+    try:
+        if not _sqlite_table_exists(connection, "GlobalSettings"):
+            warn("GlobalSettings table not found. Runtime alert preferences were not applied.")
+            return False
+
+        if not _sqlite_column_exists(connection, "GlobalSettings", "DisableFanAlerts"):
+            warn("DisableFanAlerts column not found yet. Runtime alert preferences were not applied.")
+            return False
+
+        disable_fan_alerts = int(bool(defaults.get("DisableFanAlerts", False)))
+        cursor = connection.execute(
+            "UPDATE GlobalSettings SET DisableFanAlerts = ?, LastUpdated = ?",
+            (disable_fan_alerts, datetime.now().isoformat()),
+        )
+        connection.commit()
+        if cursor.rowcount <= 0:
+            warn("GlobalSettings row not found. Runtime alert preferences were not applied.")
+            return False
+
+        status = "disabled" if disable_fan_alerts else "enabled"
+        ok(f"Fan disconnect alerts {status} in runtime database.")
+        return True
+    finally:
+        connection.close()
+
 # ---------------------------------------------------------------------------
 # Write config files
 # ---------------------------------------------------------------------------
@@ -750,6 +819,11 @@ def load_sensor_settings(sensor_dir):
 def main():
     parser = argparse.ArgumentParser(description="ThermalGuard HAT configuration wizard")
     parser.add_argument("--api-dir", required=True, help="Path to published API directory")
+    parser.add_argument(
+        "--apply-global-settings-only",
+        action="store_true",
+        help="Apply GlobalSettings defaults from shared config to the runtime database without prompting.",
+    )
     args = parser.parse_args()
 
     sensor_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -785,9 +859,14 @@ def main():
     api_settings.setdefault('BrokerHostSettings', {}).update(shared_settings.get('BrokerHostSettings', {}))
     api_settings.setdefault('ClientSettings', {}).update(shared_settings.get('ClientSettings', {}))
 
+    if args.apply_global_settings_only:
+        apply_global_settings_defaults(shared_settings, install_root)
+        return
+
     try:
         configure_api(api_settings)
         configure_display(shared_settings)
+        configure_alerts(shared_settings)
         configure_kiosk_setup(shared_settings)
         configure_mqtt(sensor_settings, api_settings)
         configure_sensors(sensor_settings)
@@ -812,6 +891,7 @@ def main():
     print(f"  Allowed origins : {api_settings['AllowedOrigins']}")
     print(f"  Kiosk bypass IPs: {', '.join(api_settings.get('Kiosk', {}).get('BypassIPs', [])) or 'none'}")
     print(f"  Kiosk mode      : {'enabled' if shared_settings.get('KioskSetup', {}).get('Enabled') else 'disabled'}")
+    print(f"  Fan alerts      : {'disabled' if shared_settings.get('GlobalSettingsDefaults', {}).get('DisableFanAlerts') else 'enabled'}")
     print(f"  Retention       : {api_settings['RetentionDays']} days")
     print()
 
@@ -821,6 +901,7 @@ def main():
 
     sync_shared_settings(shared_settings, sensor_settings, api_settings, install_root)
     write_shared_settings(shared_settings, shared_config_path)
+    apply_global_settings_defaults(shared_settings, install_root)
 
     section("Done")
     print("  Configuration complete. Services will start momentarily.\n")

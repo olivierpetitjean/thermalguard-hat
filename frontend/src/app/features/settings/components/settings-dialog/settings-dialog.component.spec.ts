@@ -57,6 +57,7 @@ describe('SettingsDialogComponent', () => {
           Fan1Pwr: 15,
           Fan2Pwr: 15,
           Beep: false,
+          DisableFanAlerts: true,
           SmtpEnable: false,
           SmtpSsl: false,
         },
@@ -78,6 +79,7 @@ describe('SettingsDialogComponent', () => {
     expect(component.controlMode).toBe('linked_fans');
     expect(component.linkedSensor).toBe('sensor2');
     expect(component.display.temperatureUnit).toBe('F');
+    expect(component.disableFanAlerts).toBe(true);
     expect(component.rules).toHaveLength(1);
     expect(component.rules[0].threshold).toBe(77);
   });
@@ -102,6 +104,7 @@ describe('SettingsDialogComponent', () => {
           Fan1Pwr: 20,
           Fan2Pwr: 25,
           Beep: false,
+          DisableFanAlerts: false,
           SmtpEnable: false,
           SmtpSsl: false,
         },
@@ -174,6 +177,7 @@ describe('SettingsDialogComponent', () => {
           Fan1Pwr: 42,
           Fan2Pwr: 55,
           Beep: true,
+          DisableFanAlerts: true,
           SmtpEnable: true,
           Smtp_host: 'smtp.local',
           SmtpPort: '2525',
@@ -189,6 +193,7 @@ describe('SettingsDialogComponent', () => {
     });
 
     component.controlMode = 'independent';
+    component.disableFanAlerts = false;
     component.rules = [
       { threshold: 40, minTemp1: 35, minTemp2: 37, value1: 80.4, value2: 70.2 },
       { threshold: 20, minTemp1: 25, minTemp2: 24, value1: 20.6, value2: 21.4 },
@@ -215,6 +220,7 @@ describe('SettingsDialogComponent', () => {
       Fan1Pwr: 42,
       Fan2Pwr: 55,
       Beep: true,
+      DisableFanAlerts: false,
       SmtpEnable: true,
       Smtp_host: 'smtp.local',
       SmtpPort: '2525',
@@ -248,6 +254,7 @@ describe('SettingsDialogComponent', () => {
           Fan1Pwr: 20,
           Fan2Pwr: 25,
           Beep: false,
+          DisableFanAlerts: false,
           SmtpEnable: false,
           SmtpSsl: false,
         },
@@ -302,6 +309,7 @@ describe('SettingsDialogComponent', () => {
           Fan1Pwr: 20,
           Fan2Pwr: 25,
           Beep: false,
+          DisableFanAlerts: false,
           SmtpEnable: false,
           SmtpSsl: false,
         },
@@ -356,6 +364,7 @@ describe('SettingsDialogComponent', () => {
           Fan1Pwr: 20,
           Fan2Pwr: 25,
           Beep: false,
+          DisableFanAlerts: true,
           SmtpEnable: false,
           SmtpSsl: false,
         },
@@ -376,6 +385,7 @@ describe('SettingsDialogComponent', () => {
     component.controlMode = 'differential';
     component.linkedSensor = 'sensor2';
     component.differentialMode = 'sensor2_minus_sensor1';
+    component.disableFanAlerts = false;
     component.rules = [
       { threshold: 40, minTemp1: 40, minTemp2: 40, value1: 90, value2: 95 },
     ];
@@ -387,6 +397,7 @@ describe('SettingsDialogComponent', () => {
     expect(component.controlMode).toBe('linked_fans');
     expect(component.linkedSensor).toBe('sensor1');
     expect(component.differentialMode).toBe('sensor1_minus_sensor2');
+    expect(component.disableFanAlerts).toBe(true);
     expect(component.rules).toEqual([
       { threshold: 25, minTemp1: 25, minTemp2: 25, value1: 30, value2: 30 },
     ]);

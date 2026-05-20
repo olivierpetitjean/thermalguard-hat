@@ -65,6 +65,7 @@ public class SqliteSchemaUpgraderTests
                 columns.Should().Contain("ControlMode");
                 columns.Should().Contain("LinkedSensor");
                 columns.Should().Contain("DifferentialMode");
+                columns.Should().Contain("DisableFanAlerts");
             }
         }
         finally
@@ -91,7 +92,8 @@ public class SqliteSchemaUpgraderTests
                         LinkedMode INTEGER NOT NULL DEFAULT 1,
                         ControlMode TEXT NOT NULL DEFAULT 'linked_fans',
                         LinkedSensor TEXT NOT NULL DEFAULT 'sensor1',
-                        DifferentialMode TEXT NOT NULL DEFAULT 'sensor1_minus_sensor2'
+                        DifferentialMode TEXT NOT NULL DEFAULT 'sensor1_minus_sensor2',
+                        DisableFanAlerts INTEGER NOT NULL DEFAULT 0
                     );
                     """;
                 command.ExecuteNonQuery();
@@ -108,6 +110,7 @@ public class SqliteSchemaUpgraderTests
                 using var reader = pragma.ExecuteReader();
                 var linkedModeColumnCount = 0;
                 var controlModeColumnCount = 0;
+                var disableFanAlertsColumnCount = 0;
                 while (reader.Read())
                 {
                     var columnName = reader["name"]?.ToString();
@@ -119,10 +122,15 @@ public class SqliteSchemaUpgraderTests
                     {
                         controlModeColumnCount++;
                     }
+                    if (string.Equals(columnName, "DisableFanAlerts", StringComparison.OrdinalIgnoreCase))
+                    {
+                        disableFanAlertsColumnCount++;
+                    }
                 }
 
                 linkedModeColumnCount.Should().Be(1);
                 controlModeColumnCount.Should().Be(1);
+                disableFanAlertsColumnCount.Should().Be(1);
             }
         }
         finally

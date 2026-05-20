@@ -10,6 +10,7 @@ public class SettingsUpdateModel
     public int Fan1Pwr { get; set; }
     public int Fan2Pwr { get; set; }
     public bool Beep { get; set; }
+    public bool DisableFanAlerts { get; set; }
     public bool SmtpEnable { get; set; }
     public string? Smtp_host { get; set; }
     public string? SmtpPort { get; set; }

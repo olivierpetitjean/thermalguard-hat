@@ -19,6 +19,11 @@
       <input [(ngModel)]="confirm" type="password" autocomplete="new-password" (keyup.enter)="submit()" />
     </label>
 
+    <label class="auth-option">
+      <input [(ngModel)]="disableFanAlerts" type="checkbox" />
+      <span>Disable fan disconnect alerts</span>
+    </label>
+
     <p class="auth-error" *ngIf="error">{{ error }}</p>
 
     <button type="button" (click)="submit()" [disabled]="loading">

@@ -94,6 +94,7 @@ public class AppDbContext : DbContext
                 Fan1Pwr = 15,
                 Fan2Pwr = 15,
                 Beep = true,
+                DisableFanAlerts = false,
                 SmtpEnable = false
             });
 

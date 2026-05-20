@@ -46,6 +46,7 @@ public class ApiControllerIntegrationTests : IntegrationTestBase
             Fan1Pwr = 25,
             Fan2Pwr = 35,
             Beep = false,
+            DisableFanAlerts = true,
             SmtpEnable = false
         });
 

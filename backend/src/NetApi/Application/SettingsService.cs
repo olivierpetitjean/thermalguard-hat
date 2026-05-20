@@ -34,6 +34,7 @@ public class SettingsService(AppDbContext db)
         current.Fan1Pwr = settings.Fan1Pwr;
         current.Fan2Pwr = settings.Fan2Pwr;
         current.Beep = settings.Beep;
+        current.DisableFanAlerts = settings.DisableFanAlerts;
         // SMTP settings are stored for a future version; email notifications are not implemented yet.
         current.SmtpEnable = settings.SmtpEnable;
         current.Smtp_host = settings.Smtp_host;

@@ -86,6 +86,19 @@
   text-transform: uppercase;
 }
 
+.settings-dialog__checkbox {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--text-soft);
+  font-size: 0.95rem;
+}
+
+.settings-dialog__checkbox input {
+  width: 16px;
+  height: 16px;
+}
+
 .settings-dialog__mode-help {
   display: flex;
   align-items: center;

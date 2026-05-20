@@ -42,6 +42,13 @@ public static class SqliteSchemaUpgrader
             alterStatement: "ALTER TABLE GlobalSettings ADD COLUMN DifferentialMode TEXT NOT NULL DEFAULT 'sensor1_minus_sensor2';"
         );
 
+        EnsureColumn(
+            connection,
+            tableName: "GlobalSettings",
+            columnName: "DisableFanAlerts",
+            alterStatement: "ALTER TABLE GlobalSettings ADD COLUMN DisableFanAlerts INTEGER NOT NULL DEFAULT 0;"
+        );
+
         if (controlModeAdded)
         {
             using var command = connection.CreateCommand();

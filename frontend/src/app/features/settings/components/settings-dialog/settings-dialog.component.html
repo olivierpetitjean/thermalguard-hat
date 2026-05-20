@@ -51,6 +51,13 @@
       <p>{{ modeHelpText }}</p>
     </div>
 
+    <section class="settings-dialog__subcontrols">
+      <label class="settings-dialog__checkbox">
+        <input type="checkbox" [(ngModel)]="disableFanAlerts" />
+        <span>Disable fan disconnect alerts</span>
+      </label>
+    </section>
+
     <div class="settings-dialog__loading" *ngIf="loading">
       <div class="settings-dialog__loading-card">Loading temperature rules...</div>
     </div>

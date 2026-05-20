@@ -200,6 +200,7 @@ def test_init_should_load_global_state_connect_mqtt_and_publish_maxrefs(monkeypa
             "Fan1Pwr": 25,
             "Fan2Pwr": 35,
             "Beep": False,
+            "DisableFanAlerts": True,
         },
         [{"MinTemp1": 30, "MinTemp2": 30, "Value1": 60, "Value2": 60}],
         "192.168.1.50",
@@ -212,6 +213,7 @@ def test_init_should_load_global_state_connect_mqtt_and_publish_maxrefs(monkeypa
     assert service._force_fp1 == 25
     assert service._force_fp2 == 35
     assert service._beep_enabled is False
+    assert service._disable_fan_alerts is True
     assert service._ip == "192.168.1.50"
     assert service._mac == "AA:BB:CC:DD:EE:FF"
     assert gpio.button_callback is not None
@@ -431,6 +433,23 @@ def test_hardware_monitor_task_should_raise_alerts_and_reinitialize_missing_sens
     assert service._fan1_alert is True
     assert service._fan2_alert is True
     assert service._has_alert is True
+
+
+def test_hardware_monitor_task_should_skip_fan_alerts_when_disabled(monkeypatch):
+    service, _gpio, sensors, _display, _db, _mqtt = create_service(monkeypatch, sensor1=35, sensor2=30)
+    service._disable_fan_alerts = True
+    service._s1temp = 35
+    service._s2temp = 30
+    service._rpm1 = 0
+    service._rpm2 = 0
+
+    service.hardware_monitor_task()
+
+    assert sensors.init_sensor1_calls == 0
+    assert sensors.init_sensor2_calls == 0
+    assert service._fan1_alert is False
+    assert service._fan2_alert is False
+    assert service._has_alert is False
 
 
 def test_update_sound_should_toggle_beep_and_persist_preference(monkeypatch):

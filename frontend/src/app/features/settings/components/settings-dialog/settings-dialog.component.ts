@@ -24,6 +24,7 @@ export class SettingsDialogComponent implements OnInit {
   controlMode: ControlMode = 'linked_fans';
   linkedSensor: LinkedSensor = 'sensor1';
   differentialMode: DifferentialMode = 'sensor1_minus_sensor2';
+  disableFanAlerts = false;
   loading = true;
   saving = false;
   saveError = '';
@@ -41,6 +42,7 @@ export class SettingsDialogComponent implements OnInit {
   private originalControlMode: ControlMode = 'linked_fans';
   private originalLinkedSensor: LinkedSensor = 'sensor1';
   private originalDifferentialMode: DifferentialMode = 'sensor1_minus_sensor2';
+  private originalDisableFanAlerts = false;
   private settingsRow: SettingsRow | null = null;
 
   private readonly http = inject(HttpClient);
@@ -135,6 +137,7 @@ export class SettingsDialogComponent implements OnInit {
     this.controlMode = this.originalControlMode;
     this.linkedSensor = this.originalLinkedSensor;
     this.differentialMode = this.originalDifferentialMode;
+    this.disableFanAlerts = this.originalDisableFanAlerts;
     this.rules = this.originalRules.map((rule) => ({ ...rule }));
     this.saveError = '';
     this.saveSuccess = '';
@@ -166,6 +169,7 @@ export class SettingsDialogComponent implements OnInit {
           Fan1Pwr: this.settingsRow.Fan1Pwr,
           Fan2Pwr: this.settingsRow.Fan2Pwr,
           Beep: this.settingsRow.Beep,
+          DisableFanAlerts: this.disableFanAlerts,
           SmtpEnable: this.settingsRow.SmtpEnable,
           Smtp_host: this.settingsRow.Smtp_host,
           SmtpPort: this.settingsRow.SmtpPort,
@@ -227,6 +231,7 @@ export class SettingsDialogComponent implements OnInit {
         this.controlMode = this.normalizeControlMode(this.settingsRow);
         this.linkedSensor = this.normalizeLinkedSensor(this.settingsRow);
         this.differentialMode = this.normalizeDifferentialMode(this.settingsRow);
+        this.disableFanAlerts = this.settingsRow?.DisableFanAlerts ?? false;
 
         this.http.get<ApiListResponse<ConditionDto>>(`${this.apiBaseUrl}/conditions`).subscribe({
           next: (conditionsResponse) => {
@@ -248,6 +253,7 @@ export class SettingsDialogComponent implements OnInit {
         this.controlMode = 'linked_fans';
         this.linkedSensor = 'sensor1';
         this.differentialMode = 'sensor1_minus_sensor2';
+        this.disableFanAlerts = false;
         this.rules = this.defaultRules();
         this.captureOriginalState();
         this.loading = false;
@@ -265,6 +271,7 @@ export class SettingsDialogComponent implements OnInit {
     this.originalControlMode = this.controlMode;
     this.originalLinkedSensor = this.linkedSensor;
     this.originalDifferentialMode = this.differentialMode;
+    this.originalDisableFanAlerts = this.disableFanAlerts;
     this.originalRules = this.rules.map((rule) => ({ ...rule }));
   }
 
@@ -502,6 +509,7 @@ interface SettingsRow {
   Fan1Pwr: number;
   Fan2Pwr: number;
   Beep: boolean;
+  DisableFanAlerts?: boolean;
   SmtpEnable: boolean;
   Smtp_host?: string;
   SmtpPort?: string;

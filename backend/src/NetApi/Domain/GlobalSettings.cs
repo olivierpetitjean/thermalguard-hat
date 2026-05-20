@@ -16,6 +16,7 @@ namespace NetApi.Domain
             Fan1Pwr = 15;
             Fan2Pwr = 15;
             Beep = true;
+            DisableFanAlerts = false;
             SmtpEnable = false;
         }
 
@@ -31,6 +32,7 @@ namespace NetApi.Domain
         public int Fan2Pwr { get; set; }
         public bool SmtpEnable { get; set; }
         public bool Beep { get; set; }
+        public bool DisableFanAlerts { get; set; }
         public string? Smtp_host { get; set; }
         public string? SmtpPort { get; set; }
         public string? SmtpSender { get; set; }

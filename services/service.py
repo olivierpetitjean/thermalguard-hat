@@ -59,6 +59,7 @@ class TemperatureService:
         self._sys_sens = {'temp': 0, 'humidity': 0}
         self._sys_fan_on = False
         self._beep_enabled = True
+        self._disable_fan_alerts = False
         self._boost_time = None
         self._last_fan_update = None
         self._last_sys_fan_change = time.time()
@@ -117,10 +118,12 @@ class TemperatureService:
         self._force_fp1 = int(global_settings['Fan1Pwr'])
         self._force_fp2 = int(global_settings['Fan2Pwr'])
         self._beep_enabled = bool(global_settings['Beep'])
+        self._disable_fan_alerts = bool(global_settings['DisableFanAlerts']) if 'DisableFanAlerts' in global_settings.keys() else False
         debug_print(
             f"Initializing service with auto={self._auto}, {self._fan1_name}={self._force_fp1}, "
             f"{self._fan2_name}={self._force_fp2}, mode={self._control_mode}, "
-            f"linked_sensor={self._linked_sensor}, differential={self._differential_mode}, beep={self._beep_enabled}",
+            f"linked_sensor={self._linked_sensor}, differential={self._differential_mode}, "
+            f"beep={self._beep_enabled}, disable_fan_alerts={self._disable_fan_alerts}",
             Verbose.INFO,
         )
 
@@ -367,8 +370,8 @@ class TemperatureService:
 
             self._set_sensor1_alert(self._s1temp == 0)
             self._set_sensor2_alert(self._s2temp == 0)
-            self._set_fan1_alert(self._rpm1 == 0)
-            self._set_fan2_alert(self._rpm2 == 0)
+            self._set_fan1_alert(False if self._disable_fan_alerts else self._rpm1 == 0)
+            self._set_fan2_alert(False if self._disable_fan_alerts else self._rpm2 == 0)
         except Exception as ex:
             debug_print(f"Unhandled error during hardware monitoring: {ex}", Verbose.ERROR)
         finally:

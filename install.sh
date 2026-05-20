@@ -668,6 +668,8 @@ warn "Enabling ThermalGuard HAT services"
 systemctl enable thermalguard-hat-api thermalguard-hat-sensor >/dev/null 2>&1 || true
 warn "Starting thermalguard-hat-api service"
 systemctl restart thermalguard-hat-api
+warn "Applying runtime alert preferences"
+python3 "$INSTALL_DIR/sensor/setup/wizard.py" --api-dir "$INSTALL_DIR/api" --apply-global-settings-only || warn "Unable to apply runtime alert preferences automatically"
 warn "Starting thermalguard-hat-sensor service"
 systemctl restart thermalguard-hat-sensor
 info "Services started"
